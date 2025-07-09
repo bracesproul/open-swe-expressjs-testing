@@ -43,12 +43,12 @@ function validateUserData(data: any): { isValid: boolean; errors: string[] } {
 // Routes
 
 // GET / - Welcome endpoint
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Welcome to the API" });
 });
 
 // GET /users - Get all users
-app.get("/users", (req: Request, res: Response) => {
+app.get("/users", (_req: Request, res: Response) => {
   const userList = Object.values(users);
   res.json(userList);
 });
@@ -66,7 +66,7 @@ app.get("/users/:id", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.json(user);
+  return res.json(user);
 });
 
 // POST /users - Create new user
@@ -87,7 +87,7 @@ app.post("/users", (req: Request, res: Response) => {
   };
 
   users[newUser.id] = newUser;
-  res.status(201).json(newUser);
+  return res.status(201).json(newUser);
 });
 
 // PUT /users/:id - Update user by ID
@@ -118,7 +118,7 @@ app.put("/users/:id", (req: Request, res: Response) => {
     email: req.body.email.trim(),
   };
 
-  res.json(users[id]);
+  return res.json(users[id]);
 });
 
 // DELETE /users/:id - Delete user by ID
@@ -135,7 +135,7 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   }
 
   delete users[id];
-  res.status(204).send();
+  return res.status(204).send();
 });
 
 // Start server
