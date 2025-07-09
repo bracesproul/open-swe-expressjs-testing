@@ -1,3 +1,4 @@
+// This file contains an example integration test.
 import { describe, it, expect } from "@jest/globals";
 
 describe("My Integration Test", () => {
