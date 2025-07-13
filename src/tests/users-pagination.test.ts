@@ -1,95 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
-import express, { Request, Response } from "express";
 import request from "supertest";
-
-// Mock the users data structure and app setup similar to src/index.ts
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: Date;
-}
-
-// In-memory database for testing
-let users: { [key: number]: User } = {};
-let nextId = 1;
-
-// Create test Express app
-const app = express();
-app.use(express.json());
-
-// Helper function to validate user data (copied from main app)
-function validateUserData(data: any): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
-    errors.push("Name is required and must be a non-empty string");
-  }
-
-  if (
-    !data.email ||
-    typeof data.email !== "string" ||
-    data.email.trim() === ""
-  ) {
-    errors.push("Email is required and must be a non-empty string");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push("Email must be a valid email address");
-  }
-
-  return { isValid: errors.length === 0, errors };
-}
-
-// GET /users - Get all users with pagination (implementation under test)
-app.get("/users", (req: Request, res: Response) => {
-  // Parse query parameters with defaults
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-  
-  // Validate parameters
-  if (page < 1) {
-    return res.status(400).json({ error: "Page must be greater than 0" });
-  }
-  
-  if (limit < 1) {
-    return res.status(400).json({ error: "Limit must be greater than 0" });
-  }
-  
-  // Get all users and calculate pagination
-  const allUsers = Object.values(users);
-  const totalCount = allUsers.length;
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedUsers = allUsers.slice(startIndex, endIndex);
-  
-  // Return paginated response
-  res.json({
-    users: paginatedUsers,
-    totalCount,
-    page,
-    limit
-  });
-});
-
-// POST /users - Create new user (for test data setup)
-app.post("/users", (req: Request, res: Response) => {
-  const { isValid, errors } = validateUserData(req.body);
-
-  if (!isValid) {
-    return res
-      .status(400)
-      .json({ error: "Validation failed", details: errors });
-  }
-
-  const newUser: User = {
-    id: nextId++,
-    name: req.body.name.trim(),
-    email: req.body.email.trim(),
-    createdAt: new Date(),
-  };
-
-  users[newUser.id] = newUser;
-  return res.status(201).json(newUser);
-});
+import { app, resetUsersForTesting } from "../index.js";
 
 describe("Users Pagination", () => {
   // Helper function to create test users
@@ -100,15 +11,13 @@ describe("Users Pagination", () => {
     return response.body;
   };
 
-  // Reset users data before each test
+  // Reset users data before and after each test
   beforeEach(() => {
-    users = {};
-    nextId = 1;
+    resetUsersForTesting();
   });
 
   afterEach(() => {
-    users = {};
-    nextId = 1;
+    resetUsersForTesting();
   });
 
   describe("Default Pagination Behavior", () => {
@@ -316,4 +225,5 @@ describe("Users Pagination", () => {
     });
   });
 });
+
 
