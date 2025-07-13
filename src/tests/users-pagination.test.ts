@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
-import express, { Request, Response } from "express";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 
 // Mock the users data structure and pagination logic
 interface User {
@@ -13,7 +12,12 @@ interface User {
 let mockUsers: { [key: number]: User } = {};
 
 // Mock the pagination endpoint logic
-function paginateUsers(req: Request): { users: User[]; totalCount: number; page: number; limit: number } {
+function paginateUsers(req: { query: { [key: string]: string | undefined } }): { 
+  users: User[]; 
+  totalCount: number; 
+  page: number; 
+  limit: number 
+} {
   // Parse query parameters with defaults
   const pageParam = req.query.page as string;
   const limitParam = req.query.limit as string;
@@ -64,7 +68,7 @@ describe("Users Pagination", () => {
 
   describe("Default Values", () => {
     it("should use default page=1 and limit=10 when no query parameters provided", () => {
-      const mockReq = { query: {} } as Request;
+      const mockReq = { query: {} };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -76,7 +80,7 @@ describe("Users Pagination", () => {
     });
 
     it("should use default page=1 when only limit is provided", () => {
-      const mockReq = { query: { limit: "5" } } as Request;
+      const mockReq = { query: { limit: "5" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -87,7 +91,7 @@ describe("Users Pagination", () => {
     });
 
     it("should use default limit=10 when only page is provided", () => {
-      const mockReq = { query: { page: "2" } } as Request;
+      const mockReq = { query: { page: "2" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(2);
@@ -100,7 +104,7 @@ describe("Users Pagination", () => {
 
   describe("Various Page/Limit Combinations", () => {
     it("should handle page=1, limit=5", () => {
-      const mockReq = { query: { page: "1", limit: "5" } } as Request;
+      const mockReq = { query: { page: "1", limit: "5" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -111,7 +115,7 @@ describe("Users Pagination", () => {
     });
 
     it("should handle page=3, limit=7", () => {
-      const mockReq = { query: { page: "3", limit: "7" } } as Request;
+      const mockReq = { query: { page: "3", limit: "7" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(3);
@@ -122,7 +126,7 @@ describe("Users Pagination", () => {
     });
 
     it("should handle large limit that exceeds total users", () => {
-      const mockReq = { query: { page: "1", limit: "100" } } as Request;
+      const mockReq = { query: { page: "1", limit: "100" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -132,7 +136,7 @@ describe("Users Pagination", () => {
     });
 
     it("should handle last page with partial results", () => {
-      const mockReq = { query: { page: "3", limit: "10" } } as Request;
+      const mockReq = { query: { page: "3", limit: "10" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(3);
@@ -145,7 +149,7 @@ describe("Users Pagination", () => {
 
   describe("Edge Cases", () => {
     it("should return empty results when page exceeds available data", () => {
-      const mockReq = { query: { page: "10", limit: "10" } } as Request;
+      const mockReq = { query: { page: "10", limit: "10" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(10);
@@ -156,7 +160,7 @@ describe("Users Pagination", () => {
 
     it("should handle empty users database", () => {
       mockUsers = {}; // Empty users
-      const mockReq = { query: { page: "1", limit: "10" } } as Request;
+      const mockReq = { query: { page: "1", limit: "10" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -168,7 +172,7 @@ describe("Users Pagination", () => {
 
   describe("Invalid Parameters", () => {
     it("should use defaults for invalid page parameter", () => {
-      const mockReq = { query: { page: "invalid", limit: "5" } } as Request;
+      const mockReq = { query: { page: "invalid", limit: "5" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1); // Default
@@ -176,7 +180,7 @@ describe("Users Pagination", () => {
     });
 
     it("should use defaults for invalid limit parameter", () => {
-      const mockReq = { query: { page: "2", limit: "invalid" } } as Request;
+      const mockReq = { query: { page: "2", limit: "invalid" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(2);
@@ -184,7 +188,7 @@ describe("Users Pagination", () => {
     });
 
     it("should use defaults for negative page parameter", () => {
-      const mockReq = { query: { page: "-1", limit: "5" } } as Request;
+      const mockReq = { query: { page: "-1", limit: "5" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1); // Default
@@ -192,7 +196,7 @@ describe("Users Pagination", () => {
     });
 
     it("should use defaults for zero or negative limit parameter", () => {
-      const mockReq = { query: { page: "1", limit: "0" } } as Request;
+      const mockReq = { query: { page: "1", limit: "0" } };
       const result = paginateUsers(mockReq);
       
       expect(result.page).toBe(1);
@@ -202,7 +206,7 @@ describe("Users Pagination", () => {
 
   describe("Response Format Validation", () => {
     it("should return correct response structure", () => {
-      const mockReq = { query: { page: "2", limit: "5" } } as Request;
+      const mockReq = { query: { page: "2", limit: "5" } };
       const result = paginateUsers(mockReq);
       
       expect(result).toHaveProperty('users');
@@ -217,7 +221,7 @@ describe("Users Pagination", () => {
     });
 
     it("should return users with correct structure", () => {
-      const mockReq = { query: { page: "1", limit: "3" } } as Request;
+      const mockReq = { query: { page: "1", limit: "3" } };
       const result = paginateUsers(mockReq);
       
       expect(result.users).toHaveLength(3);
@@ -236,9 +240,9 @@ describe("Users Pagination", () => {
     });
 
     it("should maintain correct totalCount regardless of pagination", () => {
-      const mockReq1 = { query: { page: "1", limit: "10" } } as Request;
-      const mockReq2 = { query: { page: "2", limit: "5" } } as Request;
-      const mockReq3 = { query: { page: "5", limit: "3" } } as Request;
+      const mockReq1 = { query: { page: "1", limit: "10" } };
+      const mockReq2 = { query: { page: "2", limit: "5" } };
+      const mockReq3 = { query: { page: "5", limit: "3" } };
       
       const result1 = paginateUsers(mockReq1);
       const result2 = paginateUsers(mockReq2);
@@ -250,4 +254,5 @@ describe("Users Pagination", () => {
     });
   });
 });
+
 
