@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import request from "supertest";
 import { app } from "../index.js";
 
@@ -221,5 +221,6 @@ describe("GET /users - Pagination Integration Tests", () => {
     });
   });
 });
+
 
 
