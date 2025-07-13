@@ -69,7 +69,7 @@ app.get("/users", (req: Request, res: Response) => {
   const paginatedUsers = allUsers.slice(offset, offset + limit);
   
   // Return paginated response
-  res.json({ users: paginatedUsers, totalCount, page, limit });
+  return res.json({ users: paginatedUsers, totalCount, page, limit });
 });
 
 // GET /users/:id - Get user by ID
@@ -162,4 +162,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
