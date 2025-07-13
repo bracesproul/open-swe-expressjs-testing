@@ -32,7 +32,7 @@ function createTestApp() {
   };
   
   // GET /users - Paginated endpoint (same implementation as in src/index.ts)
-  app.get("/users", (req: Request, res: Response) => {
+  app.get("/users", (req: Request, res: Response): void => {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -72,13 +72,11 @@ function createTestApp() {
 describe("GET /users - Pagination Tests", () => {
   let app: express.Application;
   let addTestUser: (name: string, email: string) => User;
-  let users: { [key: number]: User };
   
   beforeEach(() => {
     const testApp = createTestApp();
     app = testApp.app;
     addTestUser = testApp.addTestUser;
-    users = testApp.users;
   });
   
   describe("Default pagination behavior", () => {
@@ -278,4 +276,5 @@ describe("GET /users - Pagination Tests", () => {
     });
   });
 });
+
 
