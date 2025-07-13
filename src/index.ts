@@ -163,13 +163,18 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   return res.status(204).send();
 });
 
-// Export app for testing
+// Export app and test utilities
 export { app };
+export const resetUsersForTesting = () => {
+  Object.keys(users).forEach(key => delete users[parseInt(key)]);
+  nextId = 1;
+};
 
 // Start server
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
