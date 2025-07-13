@@ -48,9 +48,28 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 // GET /users - Get all users
-app.get("/users", (_req: Request, res: Response) => {
-  const userList = Object.values(users);
-  res.json(userList);
+app.get("/users", (req: Request, res: Response) => {
+  // Parse query parameters with defaults
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  
+  // Validate pagination parameters
+  if (page < 1 || limit < 1) {
+    return res.status(400).json({ 
+      error: "Invalid pagination parameters. Page and limit must be positive integers." 
+    });
+  }
+  
+  // Get all users as array
+  const allUsers = Object.values(users);
+  const totalCount = allUsers.length;
+  
+  // Calculate pagination
+  const offset = (page - 1) * limit;
+  const paginatedUsers = allUsers.slice(offset, offset + limit);
+  
+  // Return paginated response
+  res.json({ users: paginatedUsers, totalCount, page, limit });
 });
 
 // GET /users/:id - Get user by ID
@@ -143,3 +162,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
