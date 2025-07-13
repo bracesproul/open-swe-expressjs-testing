@@ -47,10 +47,37 @@ app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Welcome to the API" });
 });
 
-// GET /users - Get all users
-app.get("/users", (_req: Request, res: Response) => {
+// GET /users - Get all users with pagination
+app.get("/users", (req: Request, res: Response) => {
+  // Parse query parameters with defaults
+  const pageParam = req.query.page as string;
+  const limitParam = req.query.limit as string;
+  
+  // Convert to integers with defaults
+  let page = 1;
+  let limit = 10;
+  
+  if (pageParam) {
+    const parsedPage = parseInt(pageParam, 10);
+    if (!isNaN(parsedPage) && parsedPage > 0) {
+      page = parsedPage;
+    }
+  }
+  
+  if (limitParam) {
+    const parsedLimit = parseInt(limitParam, 10);
+    if (!isNaN(parsedLimit) && parsedLimit > 0) {
+      limit = parsedLimit;
+    }
+  }
+  
+  // Get all users and calculate pagination
   const userList = Object.values(users);
-  res.json(userList);
+  const totalCount = userList.length;
+  const offset = (page - 1) * limit;
+  const paginatedUsers = userList.slice(offset, offset + limit);
+  
+  res.json({ users: paginatedUsers, totalCount, page, limit });
 });
 
 // GET /users/:id - Get user by ID
@@ -143,3 +170,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
