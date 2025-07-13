@@ -1,26 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
-import express from "express";
 import request from "supertest";
-
-// Import the app setup from index.ts
-import "../index.js";
+import { app } from "../index.js";
 
 describe("GET /users - Pagination Integration Tests", () => {
-  let app: express.Application;
-  let server: any;
-
   beforeEach(async () => {
-    // Create a fresh Express app for each test
-    app = express();
-    app.use(express.json());
-    
-    // Start server on a different port for testing
-    server = app.listen(3001);
-    
-    // Clear any existing users and add test data
-    await request(app).delete("/users/1").expect((res) => {
-      // Ignore 404 errors for cleanup
-    });
+    // Clear existing users by attempting to delete them
+    // We'll try to delete a range of potential user IDs
+    for (let i = 1; i <= 20; i++) {
+      try {
+        await request(app).delete(`/users/${i}`);
+      } catch (error) {
+        // Ignore errors - user might not exist
+      }
+    }
     
     // Add test users
     const testUsers = [
@@ -40,12 +32,6 @@ describe("GET /users - Pagination Integration Tests", () => {
 
     for (const user of testUsers) {
       await request(app).post("/users").send(user);
-    }
-  });
-
-  afterEach(() => {
-    if (server) {
-      server.close();
     }
   });
 
@@ -235,4 +221,5 @@ describe("GET /users - Pagination Integration Tests", () => {
     });
   });
 });
+
 
