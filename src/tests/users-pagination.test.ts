@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import express, { Request, Response } from "express";
 
 // Mock the users data and nextId
@@ -201,4 +201,5 @@ describe("Users Pagination", () => {
     });
   });
 });
+
 
