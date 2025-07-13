@@ -1,69 +1,9 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
-import express, { Request, Response } from "express";
 import request from "supertest";
+import { app, users } from "../index.js";
 
-// Mock the users data structure and app setup
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: Date;
-}
-
-const users: { [key: number]: User } = {};
-let nextId = 1;
-
-// Create test app with the same structure as main app
-const app = express();
-app.use(express.json());
-
-// Helper function to clear users and reset ID counter
-function clearUsers() {
-  Object.keys(users).forEach(key => delete users[parseInt(key)]);
-  nextId = 1;
-}
-
-// Helper function to create test users
-function createTestUser(name: string, email: string): User {
-  const user: User = {
-    id: nextId++,
-    name,
-    email,
-    createdAt: new Date(),
-  };
-  users[user.id] = user;
-  return user;
-}
-
-// Implement the paginated GET /users endpoint
-app.get("/users", (req: Request, res: Response) => {
-  // Parse query parameters with defaults
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-
-  // Validate parameters
-  if (page < 1) {
-    return res.status(400).json({ error: "Page must be greater than 0" });
-  }
-  if (limit < 1) {
-    return res.status(400).json({ error: "Limit must be greater than 0" });
-  }
-
-  // Get all users and calculate pagination
-  const allUsers = Object.values(users);
-  const totalCount = allUsers.length;
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedUsers = allUsers.slice(startIndex, endIndex);
-
-  // Return paginated response
-  res.json({
-    users: paginatedUsers,
-    totalCount,
-    page,
-    limit,
-  });
-});
+// Set NODE_ENV to test to prevent server from starting
+process.env.NODE_ENV = "test";
 
 describe("GET /users - Pagination Tests", () => {
   beforeEach(() => {
@@ -73,6 +13,20 @@ describe("GET /users - Pagination Tests", () => {
   describe("Default pagination behavior", () => {
     it("should return default pagination (page=1, limit=10) when no query parameters provided", async () => {
       // Create 5 test users
+      for (let i = 1; i <= 5; i++) {
+        await request(app)
+          .post("/users")
+          .send({
+            name: `User ${i}`,
+            email: `user${i}@example.com`,
+          });
+      }
+
+      const response = await request(app).get("/users");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("users");
+      expect(response.body).toHaveProperty("totalCount", 5);
       for (let i = 1; i <= 5; i++) {
         createTestUser(`User ${i}`, `user${i}@example.com`);
       }
@@ -230,4 +184,5 @@ describe("GET /users - Pagination Tests", () => {
     });
   });
 });
+
 
