@@ -32,7 +32,7 @@ function createTestApp() {
   };
   
   // GET /users - Paginated endpoint (same implementation as in src/index.ts)
-  app.get("/users", (req: Request, res: Response): void => {
+  app.get("/users", (req: Request, res: Response) => {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -276,5 +276,6 @@ describe("GET /users - Pagination Tests", () => {
     });
   });
 });
+
 
 
