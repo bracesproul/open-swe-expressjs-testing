@@ -1,99 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
-import express from "express";
 import request from "supertest";
-
-// Import the app - we'll need to modify the main file to export the app
-// For now, let's create a test server setup
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: Date;
-}
-
-// Test server setup - replicating the main app structure for testing
-const app = express();
-app.use(express.json());
-
-// In-memory database for testing
-const users: { [key: number]: User } = {};
-let nextId = 1;
-
-// Helper function to validate user data (copied from main app)
-function validateUserData(data: any): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
-    errors.push("Name is required and must be a non-empty string");
-  }
-
-  if (
-    !data.email ||
-    typeof data.email !== "string" ||
-    data.email.trim() === ""
-  ) {
-    errors.push("Email is required and must be a non-empty string");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push("Email must be a valid email address");
-  }
-
-  return { isValid: errors.length === 0, errors };
-}
-
-// GET /users - Get all users with pagination (the endpoint we're testing)
-app.get("/users", (req: express.Request, res: express.Response) => {
-  // Parse query parameters with defaults
-  const pageParam = req.query.page as string;
-  const limitParam = req.query.limit as string;
-  
-  // Convert to integers with defaults
-  let page = 1;
-  let limit = 10;
-  
-  if (pageParam) {
-    const parsedPage = parseInt(pageParam, 10);
-    if (!isNaN(parsedPage) && parsedPage > 0) {
-      page = parsedPage;
-    }
-  }
-  
-  if (limitParam) {
-    const parsedLimit = parseInt(limitParam, 10);
-    if (!isNaN(parsedLimit) && parsedLimit > 0) {
-      limit = parsedLimit;
-    }
-  }
-  
-  // Get all users and calculate pagination
-  const userList = Object.values(users);
-  const totalCount = userList.length;
-  const offset = (page - 1) * limit;
-  const paginatedUsers = userList.slice(offset, offset + limit);
-  
-  res.json({ users: paginatedUsers, totalCount, page, limit });
-});
-
-// POST /users - Create new user (for test data setup)
-app.post("/users", (req: express.Request, res: express.Response) => {
-  const { isValid, errors } = validateUserData(req.body);
-
-  if (!isValid) {
-    return res
-      .status(400)
-      .json({ error: "Validation failed", details: errors });
-  }
-
-  const newUser: User = {
-    id: nextId++,
-    name: req.body.name.trim(),
-    email: req.body.email.trim(),
-    createdAt: new Date(),
-  };
-
-  users[newUser.id] = newUser;
-  return res.status(201).json(newUser);
-});
+import { app } from "../index.js";
 
 describe("GET /users - Pagination Integration Tests", () => {
   // Helper function to create test users
@@ -104,12 +11,9 @@ describe("GET /users - Pagination Integration Tests", () => {
     return response.body;
   };
 
-  // Clear users before each test
-  beforeEach(() => {
-    // Clear the users object
-    Object.keys(users).forEach(key => delete users[parseInt(key)]);
-    nextId = 1;
-  });
+  // Note: Since we're using the actual app with in-memory storage,
+  // tests may interfere with each other. In a real scenario, you'd want
+  // to reset the database state between tests or use a test database.
 
   describe("Default pagination behavior", () => {
     it("should return default pagination (page=1, limit=10) when no query parameters provided", async () => {
@@ -275,4 +179,5 @@ describe("GET /users - Pagination Integration Tests", () => {
     });
   });
 });
+
 
