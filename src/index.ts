@@ -48,9 +48,45 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 // GET /users - Get all users
-app.get("/users", (_req: Request, res: Response) => {
+app.get("/users", (req: Request, res: Response) => {
+  // Parse pagination parameters with defaults
+  const pageParam = req.query.page as string;
+  const limitParam = req.query.limit as string;
+  
+  let page = 1;
+  let limit = 10;
+  
+  // Validate and parse page parameter
+  if (pageParam) {
+    const parsedPage = parseInt(pageParam);
+    if (isNaN(parsedPage) || parsedPage < 1) {
+      return res.status(400).json({ error: "Invalid page parameter. Must be a positive integer." });
+    }
+    page = parsedPage;
+  }
+  
+  // Validate and parse limit parameter
+  if (limitParam) {
+    const parsedLimit = parseInt(limitParam);
+    if (isNaN(parsedLimit) || parsedLimit < 1) {
+      return res.status(400).json({ error: "Invalid limit parameter. Must be a positive integer." });
+    }
+    limit = parsedLimit;
+  }
+  
+  // Get all users as array and implement pagination
   const userList = Object.values(users);
-  res.json(userList);
+  const totalCount = userList.length;
+  const offset = (page - 1) * limit;
+  const paginatedUsers = userList.slice(offset, offset + limit);
+  
+  // Return paginated response with metadata
+  res.json({
+    users: paginatedUsers,
+    totalCount: totalCount,
+    page: page,
+    limit: limit
+  });
 });
 
 // GET /users/:id - Get user by ID
@@ -143,3 +179,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
