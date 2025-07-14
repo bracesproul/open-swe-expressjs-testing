@@ -52,31 +52,31 @@ app.get("/users", (req: Request, res: Response) => {
   // Parse query parameters with defaults
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
-  
+
   // Validate pagination parameters
   if (page < 1) {
     return res.status(400).json({ error: "Page must be greater than 0" });
   }
-  
+
   if (limit < 1 || limit > 100) {
     return res.status(400).json({ error: "Limit must be between 1 and 100" });
   }
-  
+
   // Get all users and calculate pagination
   const allUsers = Object.values(users);
   const totalCount = allUsers.length;
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
-  
+
   // Apply pagination using slice
   const paginatedUsers = allUsers.slice(startIndex, endIndex);
-  
+
   // Return paginated response with metadata
   return res.json({
     users: paginatedUsers,
     totalCount,
     page,
-    limit
+    limit,
   });
 });
 
@@ -170,5 +170,3 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-

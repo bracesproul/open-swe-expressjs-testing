@@ -22,7 +22,11 @@ function createTestApp() {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -44,31 +48,31 @@ function createTestApp() {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
+
     // Validate pagination parameters
     if (page < 1) {
       return res.status(400).json({ error: "Page must be greater than 0" });
     }
-    
+
     if (limit < 1 || limit > 100) {
       return res.status(400).json({ error: "Limit must be between 1 and 100" });
     }
-    
+
     // Get all users and calculate pagination
     const allUsers = Object.values(users);
     const totalCount = allUsers.length;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    
+
     // Apply pagination using slice
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
-    
+
     // Return paginated response with metadata
     return res.json({
       users: paginatedUsers,
       totalCount,
       page,
-      limit
+      limit,
     });
   });
 
@@ -111,13 +115,11 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
 
-      const response = await request(app)
-        .get("/users")
-        .expect(200);
+      const response = await request(app).get("/users").expect(200);
 
       expect(response.body).toHaveProperty("users");
       expect(response.body).toHaveProperty("totalCount", 15);
@@ -129,15 +131,13 @@ describe("Users Pagination Integration Tests", () => {
     });
 
     it("should return empty users array with correct metadata when no users exist", async () => {
-      const response = await request(app)
-        .get("/users")
-        .expect(200);
+      const response = await request(app).get("/users").expect(200);
 
       expect(response.body).toEqual({
         users: [],
         totalCount: 0,
         page: 1,
-        limit: 10
+        limit: 10,
       });
     });
   });
@@ -150,15 +150,13 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
     });
 
     it("should return correct page 2 with default limit", async () => {
-      const response = await request(app)
-        .get("/users?page=2")
-        .expect(200);
+      const response = await request(app).get("/users?page=2").expect(200);
 
       expect(response.body.users).toHaveLength(10);
       expect(response.body.totalCount).toBe(25);
@@ -169,9 +167,7 @@ describe("Users Pagination Integration Tests", () => {
     });
 
     it("should return correct results with custom limit", async () => {
-      const response = await request(app)
-        .get("/users?limit=5")
-        .expect(200);
+      const response = await request(app).get("/users?limit=5").expect(200);
 
       expect(response.body.users).toHaveLength(5);
       expect(response.body.totalCount).toBe(25);
@@ -197,32 +193,26 @@ describe("Users Pagination Integration Tests", () => {
 
   describe("Edge cases and error handling", () => {
     it("should return 400 error for invalid page parameter (page < 1)", async () => {
-      const response = await request(app)
-        .get("/users?page=0")
-        .expect(400);
+      const response = await request(app).get("/users?page=0").expect(400);
 
       expect(response.body).toEqual({
-        error: "Page must be greater than 0"
+        error: "Page must be greater than 0",
       });
     });
 
     it("should return 400 error for invalid limit parameter (limit < 1)", async () => {
-      const response = await request(app)
-        .get("/users?limit=0")
-        .expect(400);
+      const response = await request(app).get("/users?limit=0").expect(400);
 
       expect(response.body).toEqual({
-        error: "Limit must be between 1 and 100"
+        error: "Limit must be between 1 and 100",
       });
     });
 
     it("should return 400 error for invalid limit parameter (limit > 100)", async () => {
-      const response = await request(app)
-        .get("/users?limit=101")
-        .expect(400);
+      const response = await request(app).get("/users?limit=101").expect(400);
 
       expect(response.body).toEqual({
-        error: "Limit must be between 1 and 100"
+        error: "Limit must be between 1 and 100",
       });
     });
 
@@ -245,7 +235,7 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
     });
@@ -259,7 +249,7 @@ describe("Users Pagination Integration Tests", () => {
         users: [],
         totalCount: 5,
         page: 10,
-        limit: 10
+        limit: 10,
       });
     });
 
@@ -277,5 +267,3 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
-
-
