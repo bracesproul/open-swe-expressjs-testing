@@ -64,7 +64,7 @@ function createTestApp() {
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
     
     // Return paginated response with metadata
-    res.json({
+    return res.json({
       users: paginatedUsers,
       totalCount,
       page,
@@ -277,4 +277,5 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
+
 
