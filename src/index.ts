@@ -50,8 +50,10 @@ app.get("/", (_req: Request, res: Response) => {
 // GET /users - Get all users
 app.get("/users", (req: Request, res: Response) => {
   // Parse query parameters with defaults
-  const page = req.query.page ? parseInt(req.query.page as string) : 1;
-  const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+  const parsedPage = req.query.page ? parseInt(req.query.page as string) : 1;
+  const parsedLimit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+  const page = isNaN(parsedPage) ? 1 : parsedPage;
+  const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
 
   // Validate pagination parameters
   if (page < 1 || limit < 1) {
@@ -166,4 +168,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
