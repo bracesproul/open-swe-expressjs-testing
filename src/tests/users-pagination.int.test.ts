@@ -22,7 +22,11 @@ function createTestApp() {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -44,33 +48,33 @@ function createTestApp() {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
+
     // Validate pagination parameters
     if (page < 1) {
       return res.status(400).json({ error: "Page must be greater than 0" });
     }
-    
+
     if (limit < 1 || limit > 100) {
       return res.status(400).json({ error: "Limit must be between 1 and 100" });
     }
-    
+
     // Get all users and calculate pagination
     const allUsers = Object.values(users);
     const totalCount = allUsers.length;
-    
+
     // Calculate start and end indices for pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    
+
     // Get paginated users
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
-    
+
     // Return paginated response with metadata
     return res.json({
       users: paginatedUsers,
       totalCount,
       page,
-      limit
+      limit,
     });
   });
 
@@ -110,7 +114,7 @@ describe("Users Pagination Integration Tests", () => {
 
   afterEach(() => {
     // Clear users after each test
-    Object.keys(users).forEach(key => delete users[parseInt(key)]);
+    Object.keys(users).forEach((key) => delete users[parseInt(key)]);
   });
 
   describe("Default pagination behavior", () => {
@@ -122,7 +126,7 @@ describe("Users Pagination Integration Tests", () => {
         users: [],
         totalCount: 0,
         page: 1,
-        limit: 10
+        limit: 10,
       });
     });
 
@@ -133,7 +137,7 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
 
@@ -159,7 +163,7 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
     });
@@ -211,7 +215,7 @@ describe("Users Pagination Integration Tests", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "Page must be greater than 0"
+        error: "Page must be greater than 0",
       });
     });
 
@@ -220,7 +224,7 @@ describe("Users Pagination Integration Tests", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "Page must be greater than 0"
+        error: "Page must be greater than 0",
       });
     });
 
@@ -229,7 +233,7 @@ describe("Users Pagination Integration Tests", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "Limit must be between 1 and 100"
+        error: "Limit must be between 1 and 100",
       });
     });
 
@@ -238,7 +242,7 @@ describe("Users Pagination Integration Tests", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "Limit must be between 1 and 100"
+        error: "Limit must be between 1 and 100",
       });
     });
 
@@ -267,7 +271,7 @@ describe("Users Pagination Integration Tests", () => {
           .post("/users")
           .send({
             name: `User ${i}`,
-            email: `user${i}@example.com`
+            email: `user${i}@example.com`,
           });
       }
     });
@@ -283,5 +287,3 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
-
-
