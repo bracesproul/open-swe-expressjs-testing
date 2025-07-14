@@ -22,7 +22,11 @@ function createTestApp() {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -44,27 +48,27 @@ function createTestApp() {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
+
     // Validate pagination parameters
     if (page < 1 || limit < 1) {
-      return res.status(400).json({ 
-        error: "Page and limit must be positive integers" 
+      return res.status(400).json({
+        error: "Page and limit must be positive integers",
       });
     }
-    
+
     // Get all users and calculate pagination
     const allUsers = Object.values(users);
     const totalCount = allUsers.length;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
-    
+
     // Return paginated response with metadata
     return res.json({
       users: paginatedUsers,
       totalCount,
       page,
-      limit
+      limit,
     });
   });
 
@@ -166,11 +170,11 @@ describe("Users Pagination Integration Tests", () => {
 
       expect(page1Response.body.users).toHaveLength(3);
       expect(page2Response.body.users).toHaveLength(3);
-      
+
       // Ensure different users are returned for different pages
       const page1Ids = page1Response.body.users.map((user: User) => user.id);
       const page2Ids = page2Response.body.users.map((user: User) => user.id);
-      
+
       expect(page1Ids).not.toEqual(page2Ids);
     });
 
@@ -190,21 +194,30 @@ describe("Users Pagination Integration Tests", () => {
       const response = await request(app).get("/users?page=0");
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "Page and limit must be positive integers");
+      expect(response.body).toHaveProperty(
+        "error",
+        "Page and limit must be positive integers",
+      );
     });
 
     it("should return 400 for invalid limit parameter", async () => {
       const response = await request(app).get("/users?limit=-1");
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "Page and limit must be positive integers");
+      expect(response.body).toHaveProperty(
+        "error",
+        "Page and limit must be positive integers",
+      );
     });
 
     it("should return 400 for both invalid page and limit", async () => {
       const response = await request(app).get("/users?page=0&limit=0");
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "Page and limit must be positive integers");
+      expect(response.body).toHaveProperty(
+        "error",
+        "Page and limit must be positive integers",
+      );
     });
 
     it("should handle non-numeric page parameter gracefully", async () => {
@@ -293,18 +306,16 @@ describe("Users Pagination Integration Tests", () => {
 
     it("should return users with correct structure", async () => {
       // Create one test user
-      await request(app)
-        .post("/users")
-        .send({
-          name: "Test User",
-          email: "test@example.com",
-        });
+      await request(app).post("/users").send({
+        name: "Test User",
+        email: "test@example.com",
+      });
 
       const response = await request(app).get("/users");
 
       expect(response.status).toBe(200);
       expect(response.body.users).toHaveLength(1);
-      
+
       const user = response.body.users[0];
       expect(user).toHaveProperty("id");
       expect(user).toHaveProperty("name", "Test User");
@@ -316,5 +327,3 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
-
-
