@@ -3,7 +3,7 @@ import express, { Request, Response } from "express";
 
 // Mock the users data and nextId
 const mockUsers: { [key: number]: any } = {};
-let mockNextId = 1;
+let _mockNextId = 1;
 
 // Mock Express app setup
 const app = express();
@@ -62,7 +62,7 @@ const populateMockUsers = (count: number) => {
   for (let i = 1; i <= count; i++) {
     mockUsers[i] = createMockUser(i, `User ${i}`, `user${i}@example.com`);
   }
-  mockNextId = count + 1;
+  _mockNextId = count + 1;
 };
 
 // Mock request and response objects
@@ -72,8 +72,8 @@ const createMockRequest = (query: any = {}): Partial<Request> => ({
 
 const createMockResponse = (): Partial<Response> => {
   const res: any = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn().mockReturnThis()
+    status: jest.fn(() => res),
+    json: jest.fn(() => res)
   };
   return res;
 };
@@ -82,7 +82,7 @@ describe("Users Pagination Unit Tests", () => {
   beforeEach(() => {
     // Clear mock users before each test
     Object.keys(mockUsers).forEach(key => delete mockUsers[parseInt(key)]);
-    mockNextId = 1;
+    _mockNextId = 1;
     jest.clearAllMocks();
   });
 
@@ -103,7 +103,7 @@ describe("Users Pagination Unit Tests", () => {
         page: 1,
         limit: 10
       });
-      expect((res.json as jest.Mock).mock.calls[0][0].users).toHaveLength(10);
+      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(10);
     });
 
     it("should use default page=1 when only limit is provided", () => {
@@ -122,7 +122,7 @@ describe("Users Pagination Unit Tests", () => {
         page: 1,
         limit: 5
       });
-      expect((res.json as jest.Mock).mock.calls[0][0].users).toHaveLength(5);
+      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(5);
     });
 
     it("should use default limit=10 when only page is provided", () => {
@@ -141,7 +141,7 @@ describe("Users Pagination Unit Tests", () => {
         page: 2,
         limit: 10
       });
-      expect((res.json as jest.Mock).mock.calls[0][0].users).toHaveLength(10);
+      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(10);
     });
   });
 
@@ -156,7 +156,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.users).toHaveLength(5);
       expect(response.users[0].id).toBe(1);
       expect(response.users[4].id).toBe(5);
@@ -171,7 +171,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.users).toHaveLength(7);
       expect(response.users[0].id).toBe(15); // (3-1) * 7 + 1 = 15
       expect(response.users[6].id).toBe(21);
@@ -186,7 +186,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.users).toHaveLength(10); // 50 users, page 6 with limit 10 = users 51-60, but only 50 exist
       expect(response.users[0].id).toBe(51);
       expect(response.totalCount).toBe(50);
@@ -215,7 +215,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.users).toEqual([]);
       expect(response.totalCount).toBe(5);
       expect(response.page).toBe(10);
@@ -272,7 +272,7 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       // Should default to page 1 when parseInt returns NaN
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.page).toBe(1);
       expect(response.limit).toBe(10);
     });
@@ -285,7 +285,7 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       // Should default to limit 10 when parseInt returns NaN
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       expect(response.page).toBe(1);
       expect(response.limit).toBe(10);
     });
@@ -299,7 +299,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       
       // Check response structure
       expect(response).toHaveProperty('users');
@@ -332,7 +332,7 @@ describe("Users Pagination Unit Tests", () => {
 
       getUsersPaginated(req, res);
 
-      const response = (res.json as jest.Mock).mock.calls[0][0];
+      const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
       
       expect(response).toEqual({
         users: [],
@@ -343,4 +343,5 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
 
