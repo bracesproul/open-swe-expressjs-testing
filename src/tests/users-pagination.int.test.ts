@@ -46,15 +46,19 @@ function createTestApp() {
   // GET /users - Get all users with pagination
   app.get("/users", (req: Request, res: Response) => {
     // Parse query parameters with defaults
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const pageParam = req.query.page as string;
+    const page = pageParam ? parseInt(pageParam) : 1;
+    const finalPage = isNaN(page) ? 1 : page;
+    const limitParam = req.query.limit as string;
+    const limit = limitParam ? parseInt(limitParam) : 10;
+    const finalLimit = isNaN(limit) ? 10 : limit;
 
     // Validate pagination parameters
-    if (page < 1) {
+    if (finalPage < 1) {
       return res.status(400).json({ error: "Page must be greater than 0" });
     }
 
-    if (limit < 1 || limit > 100) {
+    if (finalLimit < 1 || finalLimit > 100) {
       return res.status(400).json({ error: "Limit must be between 1 and 100" });
     }
 
@@ -63,8 +67,8 @@ function createTestApp() {
     const totalCount = allUsers.length;
 
     // Calculate start and end indices for pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+    const startIndex = (finalPage - 1) * finalLimit;
+    const endIndex = startIndex + finalLimit;
 
     // Get paginated users
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
@@ -73,8 +77,8 @@ function createTestApp() {
     return res.json({
       users: paginatedUsers,
       totalCount,
-      page,
-      limit,
+      page: finalPage,
+      limit: finalLimit,
     });
   });
 
