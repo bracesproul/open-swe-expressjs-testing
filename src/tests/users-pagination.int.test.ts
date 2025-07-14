@@ -46,8 +46,8 @@ function createTestApp() {
   // GET /users - Get all users with pagination
   app.get("/users", (req: Request, res: Response) => {
     // Parse query parameters with defaults
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const page = req.query.page ? parseInt(req.query.page as string) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     // Validate pagination parameters
     if (page < 1 || limit < 1) {
@@ -327,3 +327,4 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
+
