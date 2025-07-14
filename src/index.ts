@@ -68,7 +68,7 @@ app.get("/users", (req: Request, res: Response) => {
   const paginatedUsers = allUsers.slice(startIndex, endIndex);
   
   // Return paginated response with metadata
-  res.json({
+  return res.json({
     users: paginatedUsers,
     totalCount,
     page,
@@ -166,4 +166,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
