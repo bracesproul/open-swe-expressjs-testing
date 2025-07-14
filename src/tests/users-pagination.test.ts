@@ -3,7 +3,6 @@ import express, { Request, Response } from "express";
 
 // Mock the users data and nextId
 const mockUsers: { [key: number]: any } = {};
-let _mockNextId = 1;
 
 // Mock Express app setup
 const app = express();
@@ -18,7 +17,7 @@ interface User {
 }
 
 // Recreate the pagination logic from the main app for testing
-const getUsersPaginated = (req: Request, res: Response): void => {
+const getUsersPaginated = (req: Request, res: Response) => {
   // Parse query parameters with defaults
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -62,7 +61,6 @@ const populateMockUsers = (count: number) => {
   for (let i = 1; i <= count; i++) {
     mockUsers[i] = createMockUser(i, `User ${i}`, `user${i}@example.com`);
   }
-  _mockNextId = count + 1;
 };
 
 // Mock request and response objects
@@ -82,7 +80,6 @@ describe("Users Pagination Unit Tests", () => {
   beforeEach(() => {
     // Clear mock users before each test
     Object.keys(mockUsers).forEach((key) => delete mockUsers[parseInt(key)]);
-    _mockNextId = 1;
     jest.clearAllMocks();
   });
 
@@ -357,4 +354,5 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
 
