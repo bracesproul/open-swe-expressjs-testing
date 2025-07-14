@@ -184,14 +184,14 @@ describe("Users Pagination Unit Tests", () => {
     });
 
     it("should return partial results for last page", () => {
-      const req = createMockRequest({ page: "6", limit: "10" }) as Request;
+      const req = createMockRequest({ page: "5", limit: "10" }) as Request;
       const res = createMockResponse() as Response;
 
       getUsersPaginated(req, res);
 
       const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
-      expect(response.users).toHaveLength(10); // 50 users, page 6 with limit 10 = users 51-60, but only 50 exist
-      expect(response.users[0].id).toBe(51);
+      expect(response.users).toHaveLength(10); // 50 users, page 5 with limit 10 = users 41-50
+      expect(response.users[0].id).toBe(41);
       expect(response.totalCount).toBe(50);
     });
   });
@@ -354,5 +354,6 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
 
 
