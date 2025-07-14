@@ -70,8 +70,8 @@ const createMockRequest = (query: any = {}): Partial<Request> => ({
 
 const createMockResponse = (): Partial<Response> => {
   const res: any = {
-    status: jest.fn(() => res),
-    json: jest.fn(() => res),
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnThis(),
   };
   return res;
 };
@@ -354,6 +354,7 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
 
 
 
