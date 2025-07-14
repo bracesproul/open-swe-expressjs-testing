@@ -22,30 +22,30 @@ const getUsersPaginated = (req: Request, res: Response) => {
   // Parse query parameters with defaults
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
-  
+
   // Validate pagination parameters
   if (page < 1) {
     return res.status(400).json({ error: "Page must be greater than 0" });
   }
-  
+
   if (limit < 1 || limit > 100) {
     return res.status(400).json({ error: "Limit must be between 1 and 100" });
   }
-  
+
   // Convert users object to array
   const userList = Object.values(mockUsers);
   const totalCount = userList.length;
-  
+
   // Calculate pagination
   const offset = (page - 1) * limit;
   const paginatedUsers = userList.slice(offset, offset + limit);
-  
+
   // Return paginated response
   res.json({
     users: paginatedUsers,
     totalCount,
     page,
-    limit
+    limit,
   });
 };
 
@@ -54,7 +54,7 @@ const createMockUser = (id: number, name: string, email: string): User => ({
   id,
   name,
   email,
-  createdAt: new Date(`2024-01-${id.toString().padStart(2, '0')}T10:00:00Z`)
+  createdAt: new Date(`2024-01-${id.toString().padStart(2, "0")}T10:00:00Z`),
 });
 
 // Helper function to populate mock users
@@ -67,13 +67,13 @@ const populateMockUsers = (count: number) => {
 
 // Mock request and response objects
 const createMockRequest = (query: any = {}): Partial<Request> => ({
-  query
+  query,
 });
 
 const createMockResponse = (): Partial<Response> => {
   const res: any = {
     status: jest.fn(() => res),
-    json: jest.fn(() => res)
+    json: jest.fn(() => res),
   };
   return res;
 };
@@ -81,7 +81,7 @@ const createMockResponse = (): Partial<Response> => {
 describe("Users Pagination Unit Tests", () => {
   beforeEach(() => {
     // Clear mock users before each test
-    Object.keys(mockUsers).forEach(key => delete mockUsers[parseInt(key)]);
+    Object.keys(mockUsers).forEach((key) => delete mockUsers[parseInt(key)]);
     _mockNextId = 1;
     jest.clearAllMocks();
   });
@@ -97,13 +97,15 @@ describe("Users Pagination Unit Tests", () => {
       expect(res.json).toHaveBeenCalledWith({
         users: expect.arrayContaining([
           expect.objectContaining({ id: 1, name: "User 1" }),
-          expect.objectContaining({ id: 10, name: "User 10" })
+          expect.objectContaining({ id: 10, name: "User 10" }),
         ]),
         totalCount: 15,
         page: 1,
-        limit: 10
+        limit: 10,
       });
-      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(10);
+      expect(
+        (res.json as jest.MockedFunction<any>).mock.calls[0][0].users,
+      ).toHaveLength(10);
     });
 
     it("should use default page=1 when only limit is provided", () => {
@@ -116,13 +118,15 @@ describe("Users Pagination Unit Tests", () => {
       expect(res.json).toHaveBeenCalledWith({
         users: expect.arrayContaining([
           expect.objectContaining({ id: 1 }),
-          expect.objectContaining({ id: 5 })
+          expect.objectContaining({ id: 5 }),
         ]),
         totalCount: 8,
         page: 1,
-        limit: 5
+        limit: 5,
       });
-      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(5);
+      expect(
+        (res.json as jest.MockedFunction<any>).mock.calls[0][0].users,
+      ).toHaveLength(5);
     });
 
     it("should use default limit=10 when only page is provided", () => {
@@ -135,13 +139,15 @@ describe("Users Pagination Unit Tests", () => {
       expect(res.json).toHaveBeenCalledWith({
         users: expect.arrayContaining([
           expect.objectContaining({ id: 11 }),
-          expect.objectContaining({ id: 20 })
+          expect.objectContaining({ id: 20 }),
         ]),
         totalCount: 25,
         page: 2,
-        limit: 10
+        limit: 10,
       });
-      expect((res.json as jest.MockedFunction<any>).mock.calls[0][0].users).toHaveLength(10);
+      expect(
+        (res.json as jest.MockedFunction<any>).mock.calls[0][0].users,
+      ).toHaveLength(10);
     });
   });
 
@@ -204,7 +210,7 @@ describe("Users Pagination Unit Tests", () => {
         users: [],
         totalCount: 0,
         page: 1,
-        limit: 10
+        limit: 10,
       });
     });
 
@@ -231,7 +237,9 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Page must be greater than 0" });
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Page must be greater than 0",
+      });
     });
 
     it("should return 400 error for negative page", () => {
@@ -241,7 +249,9 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Page must be greater than 0" });
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Page must be greater than 0",
+      });
     });
 
     it("should return 400 error for limit less than 1", () => {
@@ -251,7 +261,9 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Limit must be between 1 and 100" });
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Limit must be between 1 and 100",
+      });
     });
 
     it("should return 400 error for limit greater than 100", () => {
@@ -261,7 +273,9 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: "Limit must be between 1 and 100" });
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Limit must be between 1 and 100",
+      });
     });
 
     it("should handle non-numeric page parameter gracefully", () => {
@@ -300,29 +314,29 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
-      
+
       // Check response structure
-      expect(response).toHaveProperty('users');
-      expect(response).toHaveProperty('totalCount');
-      expect(response).toHaveProperty('page');
-      expect(response).toHaveProperty('limit');
+      expect(response).toHaveProperty("users");
+      expect(response).toHaveProperty("totalCount");
+      expect(response).toHaveProperty("page");
+      expect(response).toHaveProperty("limit");
 
       // Check types
       expect(Array.isArray(response.users)).toBe(true);
-      expect(typeof response.totalCount).toBe('number');
-      expect(typeof response.page).toBe('number');
-      expect(typeof response.limit).toBe('number');
+      expect(typeof response.totalCount).toBe("number");
+      expect(typeof response.page).toBe("number");
+      expect(typeof response.limit).toBe("number");
 
       // Check user object structure
       if (response.users.length > 0) {
         const user = response.users[0];
-        expect(user).toHaveProperty('id');
-        expect(user).toHaveProperty('name');
-        expect(user).toHaveProperty('email');
-        expect(user).toHaveProperty('createdAt');
-        expect(typeof user.id).toBe('number');
-        expect(typeof user.name).toBe('string');
-        expect(typeof user.email).toBe('string');
+        expect(user).toHaveProperty("id");
+        expect(user).toHaveProperty("name");
+        expect(user).toHaveProperty("email");
+        expect(user).toHaveProperty("createdAt");
+        expect(typeof user.id).toBe("number");
+        expect(typeof user.name).toBe("string");
+        expect(typeof user.email).toBe("string");
       }
     });
 
@@ -333,15 +347,13 @@ describe("Users Pagination Unit Tests", () => {
       getUsersPaginated(req, res);
 
       const response = (res.json as jest.MockedFunction<any>).mock.calls[0][0];
-      
+
       expect(response).toEqual({
         users: [],
         totalCount: 0,
         page: 1,
-        limit: 10
+        limit: 10,
       });
     });
   });
 });
-
-

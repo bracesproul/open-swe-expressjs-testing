@@ -60,30 +60,30 @@ const createTestApp = () => {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
+
     // Validate pagination parameters
     if (page < 1) {
       return res.status(400).json({ error: "Page must be greater than 0" });
     }
-    
+
     if (limit < 1 || limit > 100) {
       return res.status(400).json({ error: "Limit must be between 1 and 100" });
     }
-    
+
     // Convert users object to array
     const userList = Object.values(testUsers);
     const totalCount = userList.length;
-    
+
     // Calculate pagination
     const offset = (page - 1) * limit;
     const paginatedUsers = userList.slice(offset, offset + limit);
-    
+
     // Return paginated response
     return res.json({
       users: paginatedUsers,
       totalCount,
       page,
-      limit
+      limit,
     });
   });
 
@@ -120,18 +120,18 @@ const makeRequest = async (path: string): Promise<Response> => {
 // Helper function to create test users
 const createTestUser = async (name: string, email: string): Promise<User> => {
   const response = await fetch(`${baseUrl}/users`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ name, email }),
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to create user: ${response.statusText}`);
   }
-  
-  return await response.json() as User;
+
+  return (await response.json()) as User;
 };
 
 // Helper function to populate test users
@@ -147,17 +147,17 @@ const populateTestUsers = async (count: number): Promise<User[]> => {
 describe("Users Pagination Integration Tests", () => {
   beforeEach(async () => {
     // Clear test users before each test
-    Object.keys(testUsers).forEach(key => delete testUsers[parseInt(key)]);
+    Object.keys(testUsers).forEach((key) => delete testUsers[parseInt(key)]);
     testNextId = 1;
 
     // Create and start test server
     const app = createTestApp();
     const port = 0; // Use random available port
-    
+
     return new Promise<void>((resolve) => {
       server = app.listen(port, () => {
         const address = server.address();
-        if (address && typeof address === 'object') {
+        if (address && typeof address === "object") {
           baseUrl = `http://localhost:${address.port}`;
         }
         resolve();
@@ -174,11 +174,12 @@ describe("Users Pagination Integration Tests", () => {
   describe("Default Pagination Behavior", () => {
     it("should return default page=1 and limit=10 when no query parameters provided", async () => {
       await populateTestUsers(15);
-      
+
       const response = await makeRequest("/users");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(10);
       expect(data.totalCount).toBe(15);
       expect(data.page).toBe(1);
@@ -189,11 +190,12 @@ describe("Users Pagination Integration Tests", () => {
 
     it("should use default page=1 when only limit is provided", async () => {
       await populateTestUsers(8);
-      
+
       const response = await makeRequest("/users?limit=5");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(5);
       expect(data.totalCount).toBe(8);
       expect(data.page).toBe(1);
@@ -204,11 +206,12 @@ describe("Users Pagination Integration Tests", () => {
 
     it("should use default limit=10 when only page is provided", async () => {
       await populateTestUsers(25);
-      
+
       const response = await makeRequest("/users?page=2");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(10);
       expect(data.totalCount).toBe(25);
       expect(data.page).toBe(2);
@@ -226,8 +229,9 @@ describe("Users Pagination Integration Tests", () => {
     it("should return correct users for page=1&limit=5", async () => {
       const response = await makeRequest("/users?page=1&limit=5");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(5);
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(1);
@@ -239,8 +243,9 @@ describe("Users Pagination Integration Tests", () => {
     it("should return correct users for page=3&limit=7", async () => {
       const response = await makeRequest("/users?page=3&limit=7");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(7);
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(3);
@@ -252,8 +257,9 @@ describe("Users Pagination Integration Tests", () => {
     it("should return partial results for last page", async () => {
       const response = await makeRequest("/users?page=8&limit=7");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(1); // 50 users, page 8 with limit 7 = users 50-56, but only 50 exists
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(8);
@@ -264,8 +270,9 @@ describe("Users Pagination Integration Tests", () => {
     it("should handle large limit values within bounds", async () => {
       const response = await makeRequest("/users?page=1&limit=100");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toHaveLength(50); // All 50 users
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(1);
@@ -277,8 +284,9 @@ describe("Users Pagination Integration Tests", () => {
     it("should return empty array when no users exist", async () => {
       const response = await makeRequest("/users?page=1&limit=10");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toEqual([]);
       expect(data.totalCount).toBe(0);
       expect(data.page).toBe(1);
@@ -287,11 +295,12 @@ describe("Users Pagination Integration Tests", () => {
 
     it("should return empty array when page exceeds available data", async () => {
       await populateTestUsers(5);
-      
+
       const response = await makeRequest("/users?page=10&limit=10");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.users).toEqual([]);
       expect(data.totalCount).toBe(5);
       expect(data.page).toBe(10);
@@ -300,11 +309,12 @@ describe("Users Pagination Integration Tests", () => {
 
     it("should handle non-numeric parameters gracefully", async () => {
       await populateTestUsers(10);
-      
+
       const response = await makeRequest("/users?page=invalid&limit=invalid");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data.page).toBe(1); // Default when parseInt returns NaN
       expect(data.limit).toBe(10); // Default when parseInt returns NaN
       expect(data.users).toHaveLength(10);
@@ -316,32 +326,32 @@ describe("Users Pagination Integration Tests", () => {
     it("should return 400 error for page less than 1", async () => {
       const response = await makeRequest("/users?page=0");
       expect(response.status).toBe(400);
-      
-      const data: ErrorResponse = await response.json() as ErrorResponse;
+
+      const data: ErrorResponse = (await response.json()) as ErrorResponse;
       expect(data.error).toBe("Page must be greater than 0");
     });
 
     it("should return 400 error for negative page", async () => {
       const response = await makeRequest("/users?page=-1");
       expect(response.status).toBe(400);
-      
-      const data: ErrorResponse = await response.json() as ErrorResponse;
+
+      const data: ErrorResponse = (await response.json()) as ErrorResponse;
       expect(data.error).toBe("Page must be greater than 0");
     });
 
     it("should return 400 error for limit less than 1", async () => {
       const response = await makeRequest("/users?limit=0");
       expect(response.status).toBe(400);
-      
-      const data: ErrorResponse = await response.json() as ErrorResponse;
+
+      const data: ErrorResponse = (await response.json()) as ErrorResponse;
       expect(data.error).toBe("Limit must be between 1 and 100");
     });
 
     it("should return 400 error for limit greater than 100", async () => {
       const response = await makeRequest("/users?limit=101");
       expect(response.status).toBe(400);
-      
-      const data: ErrorResponse = await response.json() as ErrorResponse;
+
+      const data: ErrorResponse = (await response.json()) as ErrorResponse;
       expect(data.error).toBe("Limit must be between 1 and 100");
     });
   });
@@ -349,59 +359,61 @@ describe("Users Pagination Integration Tests", () => {
   describe("Response Format and Headers", () => {
     it("should return correct Content-Type header", async () => {
       await populateTestUsers(5);
-      
+
       const response = await makeRequest("/users");
       expect(response.status).toBe(200);
-      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(response.headers.get("content-type")).toContain(
+        "application/json",
+      );
     });
 
     it("should return response with correct structure and data types", async () => {
       await populateTestUsers(3);
-      
+
       const response = await makeRequest("/users?page=1&limit=2");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
-      
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
+
       // Check response structure
-      expect(data).toHaveProperty('users');
-      expect(data).toHaveProperty('totalCount');
-      expect(data).toHaveProperty('page');
-      expect(data).toHaveProperty('limit');
+      expect(data).toHaveProperty("users");
+      expect(data).toHaveProperty("totalCount");
+      expect(data).toHaveProperty("page");
+      expect(data).toHaveProperty("limit");
 
       // Check types
       expect(Array.isArray(data.users)).toBe(true);
-      expect(typeof data.totalCount).toBe('number');
-      expect(typeof data.page).toBe('number');
-      expect(typeof data.limit).toBe('number');
+      expect(typeof data.totalCount).toBe("number");
+      expect(typeof data.page).toBe("number");
+      expect(typeof data.limit).toBe("number");
 
       // Check user object structure
       if (data.users.length > 0) {
         const user = data.users[0];
-        expect(user).toHaveProperty('id');
-        expect(user).toHaveProperty('name');
-        expect(user).toHaveProperty('email');
-        expect(user).toHaveProperty('createdAt');
-        expect(typeof user.id).toBe('number');
-        expect(typeof user.name).toBe('string');
-        expect(typeof user.email).toBe('string');
-        expect(typeof user.createdAt).toBe('string');
+        expect(user).toHaveProperty("id");
+        expect(user).toHaveProperty("name");
+        expect(user).toHaveProperty("email");
+        expect(user).toHaveProperty("createdAt");
+        expect(typeof user.id).toBe("number");
+        expect(typeof user.name).toBe("string");
+        expect(typeof user.email).toBe("string");
+        expect(typeof user.createdAt).toBe("string");
       }
     });
 
     it("should maintain consistent response format even with empty results", async () => {
       const response = await makeRequest("/users?page=1&limit=10");
       expect(response.status).toBe(200);
-      
-      const data: PaginatedResponse = await response.json() as PaginatedResponse;
+
+      const data: PaginatedResponse =
+        (await response.json()) as PaginatedResponse;
       expect(data).toEqual({
         users: [],
         totalCount: 0,
         page: 1,
-        limit: 10
+        limit: 10,
       });
     });
   });
 });
-
-
