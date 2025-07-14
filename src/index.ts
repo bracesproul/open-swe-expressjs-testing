@@ -47,10 +47,37 @@ app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Welcome to the API" });
 });
 
-// GET /users - Get all users
-app.get("/users", (_req: Request, res: Response) => {
+// GET /users - Get all users with pagination
+app.get("/users", (req: Request, res: Response) => {
+  const pageParam = req.query.page as string;
+  const limitParam = req.query.limit as string;
+  
+  const parsedPage = pageParam ? parseInt(pageParam) : 1;
+  const parsedLimit = limitParam ? parseInt(limitParam) : 10;
+  
+  const page = (isNaN(parsedPage) || parsedPage < 1) ? 1 : parsedPage;
+  const limit = (isNaN(parsedLimit) || parsedLimit < 1) ? 10 : parsedLimit;
+  
+  if (pageParam && !isNaN(parseInt(pageParam)) && parseInt(pageParam) < 1) {
+    return res.status(400).json({ error: "Page must be greater than 0" });
+  }
+  
+  if (limitParam && !isNaN(parseInt(limitParam)) && parseInt(limitParam) < 1) {
+    return res.status(400).json({ error: "Limit must be greater than 0" });
+  }
+  
   const userList = Object.values(users);
-  res.json(userList);
+  const totalCount = userList.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedUsers = userList.slice(startIndex, endIndex);
+  
+  return res.json({
+    users: paginatedUsers,
+    totalCount,
+    page,
+    limit
+  });
 });
 
 // GET /users/:id - Get user by ID
