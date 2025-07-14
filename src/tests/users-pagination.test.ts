@@ -18,7 +18,7 @@ interface User {
 }
 
 // Recreate the pagination logic from the main app for testing
-const getUsersPaginated = (req: Request, res: Response) => {
+const getUsersPaginated = (req: Request, res: Response): void => {
   // Parse query parameters with defaults
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -41,7 +41,7 @@ const getUsersPaginated = (req: Request, res: Response) => {
   const paginatedUsers = userList.slice(offset, offset + limit);
 
   // Return paginated response
-  res.json({
+  return res.json({
     users: paginatedUsers,
     totalCount,
     page,
@@ -357,3 +357,4 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
