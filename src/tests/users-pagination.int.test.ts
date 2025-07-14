@@ -56,7 +56,7 @@ const createTestApp = () => {
   app.use(express.json());
 
   // GET /users - Get all users with pagination
-  app.get("/users", (req, res) => {
+  app.get("/users", (req, res): void => {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -79,7 +79,7 @@ const createTestApp = () => {
     const paginatedUsers = userList.slice(offset, offset + limit);
     
     // Return paginated response
-    res.json({
+    return res.json({
       users: paginatedUsers,
       totalCount,
       page,
@@ -88,7 +88,7 @@ const createTestApp = () => {
   });
 
   // POST /users - Create new user (for test data setup)
-  app.post("/users", (req, res) => {
+  app.post("/users", (req, res): void => {
     const { isValid, errors } = validateUserData(req.body);
 
     if (!isValid) {
@@ -131,7 +131,7 @@ const createTestUser = async (name: string, email: string): Promise<User> => {
     throw new Error(`Failed to create user: ${response.statusText}`);
   }
   
-  return await response.json();
+  return await response.json() as User;
 };
 
 // Helper function to populate test users
@@ -178,7 +178,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(10);
       expect(data.totalCount).toBe(15);
       expect(data.page).toBe(1);
@@ -193,7 +193,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?limit=5");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(5);
       expect(data.totalCount).toBe(8);
       expect(data.page).toBe(1);
@@ -208,7 +208,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=2");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(10);
       expect(data.totalCount).toBe(25);
       expect(data.page).toBe(2);
@@ -227,7 +227,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=1&limit=5");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(5);
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(1);
@@ -240,7 +240,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=3&limit=7");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(7);
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(3);
@@ -253,7 +253,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=8&limit=7");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(1); // 50 users, page 8 with limit 7 = users 50-56, but only 50 exists
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(8);
@@ -265,7 +265,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=1&limit=100");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toHaveLength(50); // All 50 users
       expect(data.totalCount).toBe(50);
       expect(data.page).toBe(1);
@@ -278,7 +278,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=1&limit=10");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toEqual([]);
       expect(data.totalCount).toBe(0);
       expect(data.page).toBe(1);
@@ -291,7 +291,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=10&limit=10");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.users).toEqual([]);
       expect(data.totalCount).toBe(5);
       expect(data.page).toBe(10);
@@ -304,7 +304,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=invalid&limit=invalid");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data.page).toBe(1); // Default when parseInt returns NaN
       expect(data.limit).toBe(10); // Default when parseInt returns NaN
       expect(data.users).toHaveLength(10);
@@ -317,7 +317,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=0");
       expect(response.status).toBe(400);
       
-      const data: ErrorResponse = await response.json();
+      const data: ErrorResponse = await response.json() as ErrorResponse;
       expect(data.error).toBe("Page must be greater than 0");
     });
 
@@ -325,7 +325,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=-1");
       expect(response.status).toBe(400);
       
-      const data: ErrorResponse = await response.json();
+      const data: ErrorResponse = await response.json() as ErrorResponse;
       expect(data.error).toBe("Page must be greater than 0");
     });
 
@@ -333,7 +333,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?limit=0");
       expect(response.status).toBe(400);
       
-      const data: ErrorResponse = await response.json();
+      const data: ErrorResponse = await response.json() as ErrorResponse;
       expect(data.error).toBe("Limit must be between 1 and 100");
     });
 
@@ -341,7 +341,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?limit=101");
       expect(response.status).toBe(400);
       
-      const data: ErrorResponse = await response.json();
+      const data: ErrorResponse = await response.json() as ErrorResponse;
       expect(data.error).toBe("Limit must be between 1 and 100");
     });
   });
@@ -361,7 +361,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=1&limit=2");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       
       // Check response structure
       expect(data).toHaveProperty('users');
@@ -393,7 +393,7 @@ describe("Users Pagination Integration Tests", () => {
       const response = await makeRequest("/users?page=1&limit=10");
       expect(response.status).toBe(200);
       
-      const data: PaginatedResponse = await response.json();
+      const data: PaginatedResponse = await response.json() as PaginatedResponse;
       expect(data).toEqual({
         users: [],
         totalCount: 0,
@@ -403,4 +403,5 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
+
 
