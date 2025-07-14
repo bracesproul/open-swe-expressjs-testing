@@ -228,6 +228,7 @@ describe("Users Pagination Unit Tests", () => {
 
   describe("Invalid Parameters", () => {
     it("should return 400 error for page less than 1", () => {
+      console.log("Testing page=0, parseInt('0') =", parseInt("0"));
       const req = createMockRequest({ page: "0" }) as Request;
       const res = createMockResponse() as Response;
 
@@ -252,6 +253,7 @@ describe("Users Pagination Unit Tests", () => {
     });
 
     it("should return 400 error for limit less than 1", () => {
+      console.log("Testing limit=0, parseInt('0') =", parseInt("0"));
       const req = createMockRequest({ limit: "0" }) as Request;
       const res = createMockResponse() as Response;
 
@@ -354,6 +356,7 @@ describe("Users Pagination Unit Tests", () => {
     });
   });
 });
+
 
 
 
