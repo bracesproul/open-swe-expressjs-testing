@@ -48,9 +48,45 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 // GET /users - Get all users
-app.get("/users", (_req: Request, res: Response) => {
-  const userList = Object.values(users);
-  res.json(userList);
+app.get("/users", (req: Request, res: Response) => {
+  // Parse query parameters with defaults
+  const pageParam = req.query.page as string;
+  const limitParam = req.query.limit as string;
+  
+  const page = pageParam ? parseInt(pageParam) : 1;
+  const limit = limitParam ? parseInt(limitParam) : 10;
+  
+  // Handle NaN cases (invalid non-numeric input)
+  const finalPage = isNaN(page) ? 1 : page;
+  const finalLimit = isNaN(limit) ? 10 : limit;
+
+  // Validate pagination parameters
+  if (finalPage < 1) {
+    return res.status(400).json({ error: "Page must be greater than 0" });
+  }
+
+  if (finalLimit < 1 || finalLimit > 100) {
+    return res.status(400).json({ error: "Limit must be between 1 and 100" });
+  }
+
+  // Get all users and calculate pagination
+  const allUsers = Object.values(users);
+  const totalCount = allUsers.length;
+
+  // Calculate start and end indices for pagination
+  const startIndex = (finalPage - 1) * finalLimit;
+  const endIndex = startIndex + finalLimit;
+
+  // Get paginated users
+  const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+  // Return paginated response with metadata
+  return res.json({
+    users: paginatedUsers,
+    totalCount,
+    page: finalPage,
+    limit: finalLimit,
+  });
 });
 
 // GET /users/:id - Get user by ID
@@ -143,3 +179,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
