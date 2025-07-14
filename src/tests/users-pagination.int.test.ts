@@ -56,7 +56,7 @@ const createTestApp = () => {
   app.use(express.json());
 
   // GET /users - Get all users with pagination
-  app.get("/users", (req, res): void => {
+  app.get("/users", (req, res) => {
     // Parse query parameters with defaults
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -88,7 +88,7 @@ const createTestApp = () => {
   });
 
   // POST /users - Create new user (for test data setup)
-  app.post("/users", (req, res): void => {
+  app.post("/users", (req, res) => {
     const { isValid, errors } = validateUserData(req.body);
 
     if (!isValid) {
@@ -417,3 +417,4 @@ describe("Users Pagination Integration Tests", () => {
     });
   });
 });
+
