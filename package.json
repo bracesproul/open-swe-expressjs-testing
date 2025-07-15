@@ -26,6 +26,9 @@
     "@tsconfig/recommended": "^1.0.7",
     "@types/jest": "^29.5.0",
     "@types/node": "^22.10.6",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
     "dotenv": "^16.4.7",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^8.8.0",
@@ -37,7 +40,8 @@
     "ts-jest": "^29.1.0",
     "tsx": "^4.19.2",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.22.0"
+    "typescript-eslint": "^8.22.0",
+    "vite": "^7.0.4"
   },
   "dependencies": {
     "@types/express": "^5.0.3",
