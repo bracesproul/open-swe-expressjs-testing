@@ -260,3 +260,5 @@ describe("User Search Endpoint", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // Should return all users
     });
+  });
+});
