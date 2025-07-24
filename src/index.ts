@@ -69,6 +69,26 @@ app.get("/users/:id", (req: Request, res: Response) => {
   return res.json(user);
 });
 
+// GET /users/search - Search users by name or email
+app.get("/users/search", (req: Request, res: Response) => {
+  const query = req.query.q as string;
+
+  // If no query provided, return empty array
+  if (!query || typeof query !== "string" || query.trim() === "") {
+    return res.json([]);
+  }
+
+  const searchTerm = query.toLowerCase().trim();
+  const userList = Object.values(users);
+  
+  const matchingUsers = userList.filter((user) => {
+    return user.name.toLowerCase().includes(searchTerm) || 
+           user.email.toLowerCase().includes(searchTerm);
+  });
+
+  return res.json(matchingUsers);
+});
+
 // POST /users - Create new user
 app.post("/users", (req: Request, res: Response) => {
   const { isValid, errors } = validateUserData(req.body);
@@ -143,3 +163,8 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Export app for testing
+export { app };
+
+
