@@ -251,7 +251,8 @@ describe("User Search Endpoint", () => {
       const response = await request(testApp).get("/users/search?q=john doe");
       
       expect(response.status).toBe(200);
-      expect(response.body).toHaveLength(0); // No user has "john doe" as a substring
+      expect(response.body).toHaveLength(1); // "John Doe" contains "john doe" as a substring
+      expect(response.body[0].name).toBe("John Doe");
     });
 
     it("should handle empty string after trimming", async () => {
