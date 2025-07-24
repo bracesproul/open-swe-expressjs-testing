@@ -22,7 +22,11 @@ const createTestApp = () => {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -48,19 +52,20 @@ const createTestApp = () => {
   // GET /users/search - Search users by name or email
   app.get("/users/search", (req, res) => {
     const query = req.query.q as string;
-    
+
     // If no query provided, return all users
     if (!query || query.trim() === "") {
       const userList = Object.values(users);
       return res.json(userList);
     }
-    
+
     const searchTerm = query.toLowerCase().trim();
-    const matchingUsers = Object.values(users).filter(user => 
-      user.name.toLowerCase().includes(searchTerm) || 
-      user.email.toLowerCase().includes(searchTerm)
+    const matchingUsers = Object.values(users).filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm),
     );
-    
+
     return res.json(matchingUsers);
   });
 
@@ -126,31 +131,31 @@ describe("User Search Endpoint", () => {
   describe("GET /users/search", () => {
     it("should return all users when query is empty", async () => {
       const response = await request(testApp).get("/users/search?q=");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4);
     });
 
     it("should return all users when no query parameter is provided", async () => {
       const response = await request(testApp).get("/users/search");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4);
     });
 
     it("should find users by partial name match", async () => {
       const response = await request(testApp).get("/users/search?q=John");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(2);
       expect(response.body.map((u: User) => u.name)).toEqual(
-        expect.arrayContaining(["John Doe", "Bob Johnson"])
+        expect.arrayContaining(["John Doe", "Bob Johnson"]),
       );
     });
 
     it("should find users by partial email match", async () => {
       const response = await request(testApp).get("/users/search?q=example");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1);
       expect(response.body[0].email).toBe("john.doe@example.com");
@@ -158,7 +163,7 @@ describe("User Search Endpoint", () => {
 
     it("should perform case-insensitive search on names", async () => {
       const response = await request(testApp).get("/users/search?q=JANE");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1);
       expect(response.body[0].name).toBe("Jane Smith");
@@ -166,15 +171,17 @@ describe("User Search Endpoint", () => {
 
     it("should perform case-insensitive search on emails", async () => {
       const response = await request(testApp).get("/users/search?q=TEST.ORG");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1);
       expect(response.body[0].email).toBe("jane.smith@test.org");
     });
 
     it("should return empty array when no matches found", async () => {
-      const response = await request(testApp).get("/users/search?q=nonexistent");
-      
+      const response = await request(testApp).get(
+        "/users/search?q=nonexistent",
+      );
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(0);
       expect(response.body).toEqual([]);
@@ -182,35 +189,35 @@ describe("User Search Endpoint", () => {
 
     it("should handle special characters in queries", async () => {
       const response = await request(testApp).get("/users/search?q=@");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // All users have @ in their email
     });
 
     it("should handle dots in queries", async () => {
       const response = await request(testApp).get("/users/search?q=.");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // All users have dots in their email
     });
 
     it("should handle queries with only whitespace", async () => {
       const response = await request(testApp).get("/users/search?q=   ");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // Should return all users
     });
 
     it("should handle URL encoded special characters", async () => {
       const response = await request(testApp).get("/users/search?q=%40"); // @ symbol URL encoded
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // All users have @ in their email
     });
 
     it("should handle undefined query parameter gracefully", async () => {
       const response = await request(testApp).get("/users/search");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // Should return all users
     });
@@ -225,7 +232,7 @@ describe("User Search Endpoint", () => {
       };
 
       const response = await request(testApp).get("/users/search?q=123");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1);
       expect(response.body[0].name).toBe("User123");
@@ -241,7 +248,7 @@ describe("User Search Endpoint", () => {
       };
 
       const response = await request(testApp).get("/users/search?q=test-user");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1);
       expect(response.body[0].name).toBe("Test-User_Name");
@@ -249,7 +256,7 @@ describe("User Search Endpoint", () => {
 
     it("should handle multiple word search terms (no matches expected)", async () => {
       const response = await request(testApp).get("/users/search?q=john doe");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(1); // "John Doe" contains "john doe" as a substring
       expect(response.body[0].name).toBe("John Doe");
@@ -257,7 +264,7 @@ describe("User Search Endpoint", () => {
 
     it("should handle empty string after trimming", async () => {
       const response = await request(testApp).get("/users/search?q=    ");
-      
+
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(4); // Should return all users
     });
