@@ -23,7 +23,11 @@ const createTestApp = () => {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -75,13 +79,18 @@ const createTestApp = () => {
     const query = req.query.q as string;
 
     if (!query || typeof query !== "string" || query.trim() === "") {
-      return res.status(400).json({ error: "Query parameter 'q' is required and must be a non-empty string" });
+      return res
+        .status(400)
+        .json({
+          error:
+            "Query parameter 'q' is required and must be a non-empty string",
+        });
     }
 
     const searchTerm = query.trim().toLowerCase();
     const userList = Object.values(users);
-    
-    const matchingUsers = userList.filter(user => {
+
+    const matchingUsers = userList.filter((user) => {
       const nameMatch = user.name.toLowerCase().includes(searchTerm);
       const emailMatch = user.email.toLowerCase().includes(searchTerm);
       return nameMatch || emailMatch;
@@ -102,22 +111,18 @@ describe("User Search Endpoint", () => {
 
   describe("GET /users/search", () => {
     it("should return 400 error when query parameter 'q' is missing", async () => {
-      const response = await request(app)
-        .get("/users/search")
-        .expect(400);
+      const response = await request(app).get("/users/search").expect(400);
 
       expect(response.body).toEqual({
-        error: "Query parameter 'q' is required and must be a non-empty string"
+        error: "Query parameter 'q' is required and must be a non-empty string",
       });
     });
 
     it("should return 400 error when query parameter 'q' is empty", async () => {
-      const response = await request(app)
-        .get("/users/search?q=")
-        .expect(400);
+      const response = await request(app).get("/users/search?q=").expect(400);
 
       expect(response.body).toEqual({
-        error: "Query parameter 'q' is required and must be a non-empty string"
+        error: "Query parameter 'q' is required and must be a non-empty string",
       });
     });
 
@@ -127,7 +132,7 @@ describe("User Search Endpoint", () => {
         .expect(400);
 
       expect(response.body).toEqual({
-        error: "Query parameter 'q' is required and must be a non-empty string"
+        error: "Query parameter 'q' is required and must be a non-empty string",
       });
     });
 
@@ -157,7 +162,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "John Doe", email: "john@example.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Jane Smith", email: "jane@example.com" });
@@ -177,7 +182,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "John Doe", email: "john@example.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Jane Smith", email: "jane@example.com" });
@@ -197,7 +202,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "John Doe", email: "john@example.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Johnny Cash", email: "johnny@example.com" });
@@ -221,7 +226,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "John Doe", email: "john@gmail.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Jane Smith", email: "jane@gmail.com" });
@@ -236,8 +241,12 @@ describe("User Search Endpoint", () => {
         .expect(200);
 
       expect(response.body).toHaveLength(2);
-      expect(response.body.map((u: User) => u.email)).toContain("john@gmail.com");
-      expect(response.body.map((u: User) => u.email)).toContain("jane@gmail.com");
+      expect(response.body.map((u: User) => u.email)).toContain(
+        "john@gmail.com",
+      );
+      expect(response.body.map((u: User) => u.email)).toContain(
+        "jane@gmail.com",
+      );
     });
 
     it("should search across both name and email fields", async () => {
@@ -245,7 +254,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "Alice Johnson", email: "alice@example.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Bob Smith", email: "bob@johnson.com" });
@@ -269,7 +278,7 @@ describe("User Search Endpoint", () => {
       await request(app)
         .post("/users")
         .send({ name: "John Doe", email: "john@example.com" });
-      
+
       await request(app)
         .post("/users")
         .send({ name: "Jane Doe", email: "jane@example.com" });
@@ -320,5 +329,3 @@ describe("User Search Endpoint", () => {
     });
   });
 });
-
-

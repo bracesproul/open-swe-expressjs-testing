@@ -74,13 +74,17 @@ app.get("/users/search", (req: Request, res: Response) => {
   const query = req.query.q as string;
 
   if (!query || typeof query !== "string" || query.trim() === "") {
-    return res.status(400).json({ error: "Query parameter 'q' is required and must be a non-empty string" });
+    return res
+      .status(400)
+      .json({
+        error: "Query parameter 'q' is required and must be a non-empty string",
+      });
   }
 
   const searchTerm = query.trim().toLowerCase();
   const userList = Object.values(users);
-  
-  const matchingUsers = userList.filter(user => {
+
+  const matchingUsers = userList.filter((user) => {
     const nameMatch = user.name.toLowerCase().includes(searchTerm);
     const emailMatch = user.email.toLowerCase().includes(searchTerm);
     return nameMatch || emailMatch;
