@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import request from "supertest";
 import express from "express";
 
@@ -320,4 +320,5 @@ describe("User Search Endpoint", () => {
     });
   });
 });
+
 
