@@ -69,6 +69,30 @@ app.get("/users/:id", (req: Request, res: Response) => {
   return res.json(user);
 });
 
+// GET /users/search - Search users by name or email
+app.get("/users/search", (req: Request, res: Response) => {
+  const query = req.query.q as string;
+
+  if (!query || typeof query !== "string" || query.trim() === "") {
+    return res
+      .status(400)
+      .json({
+        error: "Query parameter 'q' is required and must be a non-empty string",
+      });
+  }
+
+  const searchTerm = query.trim().toLowerCase();
+  const userList = Object.values(users);
+
+  const matchingUsers = userList.filter((user) => {
+    const nameMatch = user.name.toLowerCase().includes(searchTerm);
+    const emailMatch = user.email.toLowerCase().includes(searchTerm);
+    return nameMatch || emailMatch;
+  });
+
+  return res.json(matchingUsers);
+});
+
 // POST /users - Create new user
 app.post("/users", (req: Request, res: Response) => {
   const { isValid, errors } = validateUserData(req.body);
