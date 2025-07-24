@@ -53,6 +53,26 @@ app.get("/users", (_req: Request, res: Response) => {
   res.json(userList);
 });
 
+// GET /users/search - Search users by name or email
+app.get("/users/search", (req: Request, res: Response) => {
+  const query = req.query.q as string;
+
+  // If no query provided, return all users
+  if (!query || query.trim() === "") {
+    const userList = Object.values(users);
+    return res.json(userList);
+  }
+
+  const searchTerm = query.toLowerCase().trim();
+  const matchingUsers = Object.values(users).filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm) ||
+      user.email.toLowerCase().includes(searchTerm),
+  );
+
+  return res.json(matchingUsers);
+});
+
 // GET /users/:id - Get user by ID
 app.get("/users/:id", (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
