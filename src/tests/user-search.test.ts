@@ -178,3 +178,85 @@ describe("User Search Endpoint", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(0);
       expect(response.body).toEqual([]);
+    });
+
+    it("should handle special characters in queries", async () => {
+      const response = await request(testApp).get("/users/search?q=@");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // All users have @ in their email
+    });
+
+    it("should handle dots in queries", async () => {
+      const response = await request(testApp).get("/users/search?q=.");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // All users have dots in their email
+    });
+
+    it("should handle queries with only whitespace", async () => {
+      const response = await request(testApp).get("/users/search?q=   ");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // Should return all users
+    });
+
+    it("should handle URL encoded special characters", async () => {
+      const response = await request(testApp).get("/users/search?q=%40"); // @ symbol URL encoded
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // All users have @ in their email
+    });
+
+    it("should handle undefined query parameter gracefully", async () => {
+      const response = await request(testApp).get("/users/search");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // Should return all users
+    });
+
+    it("should handle search with numbers", async () => {
+      // Add a user with numbers for this test
+      testUsers[5] = {
+        id: 5,
+        name: "User123",
+        email: "user123@test.com",
+        createdAt: new Date("2023-01-05"),
+      };
+
+      const response = await request(testApp).get("/users/search?q=123");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0].name).toBe("User123");
+    });
+
+    it("should handle search with hyphens and underscores", async () => {
+      // Add a user with special characters for this test
+      testUsers[6] = {
+        id: 6,
+        name: "Test-User_Name",
+        email: "test-user@sub-domain.com",
+        createdAt: new Date("2023-01-06"),
+      };
+
+      const response = await request(testApp).get("/users/search?q=test-user");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0].name).toBe("Test-User_Name");
+    });
+
+    it("should handle multiple word search terms (no matches expected)", async () => {
+      const response = await request(testApp).get("/users/search?q=john doe");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(0); // No user has "john doe" as a substring
+    });
+
+    it("should handle empty string after trimming", async () => {
+      const response = await request(testApp).get("/users/search?q=    ");
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(4); // Should return all users
+    });
