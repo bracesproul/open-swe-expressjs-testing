@@ -5,9 +5,7 @@ import { app } from "../index.js";
 describe("GET /users/search", () => {
   // Helper function to create test users
   const createTestUser = async (name: string, email: string) => {
-    const response = await request(app)
-      .post("/users")
-      .send({ name, email });
+    const response = await request(app).post("/users").send({ name, email });
     return response.body;
   };
 
@@ -16,7 +14,7 @@ describe("GET /users/search", () => {
     // Clear existing users by getting all users and deleting them
     const usersResponse = await request(app).get("/users");
     const users = usersResponse.body;
-    
+
     for (const user of users) {
       await request(app).delete(`/users/${user.id}`);
     }
@@ -24,17 +22,13 @@ describe("GET /users/search", () => {
 
   describe("Empty query scenarios", () => {
     it("should return empty array when no query parameter is provided", async () => {
-      const response = await request(app)
-        .get("/users/search")
-        .expect(200);
+      const response = await request(app).get("/users/search").expect(200);
 
       expect(response.body).toEqual([]);
     });
 
     it("should return empty array when query parameter is empty string", async () => {
-      const response = await request(app)
-        .get("/users/search?q=")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=").expect(200);
 
       expect(response.body).toEqual([]);
     });
@@ -90,9 +84,7 @@ describe("GET /users/search", () => {
     });
 
     it("should return users with partial name match (single character)", async () => {
-      const response = await request(app)
-        .get("/users/search?q=J")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=J").expect(200);
 
       expect(response.body).toHaveLength(3);
       expect(response.body.map((u: any) => u.name)).toContain("John Doe");
@@ -268,9 +260,7 @@ describe("GET /users/search", () => {
     });
 
     it("should return all users when search matches common pattern", async () => {
-      const response = await request(app)
-        .get("/users/search?q=@")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=@").expect(200);
 
       expect(response.body).toHaveLength(4);
     });
@@ -288,12 +278,12 @@ describe("GET /users/search", () => {
 
       expect(response.body).toHaveLength(1);
       const user = response.body[0];
-      
+
       expect(user).toHaveProperty("id");
       expect(user).toHaveProperty("name");
       expect(user).toHaveProperty("email");
       expect(user).toHaveProperty("createdAt");
-      
+
       expect(typeof user.id).toBe("number");
       expect(typeof user.name).toBe("string");
       expect(typeof user.email).toBe("string");
@@ -301,5 +291,3 @@ describe("GET /users/search", () => {
     });
   });
 });
-
-
