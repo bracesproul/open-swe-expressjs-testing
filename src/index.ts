@@ -139,7 +139,9 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 });
 
 // Start server
+export { app };
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
