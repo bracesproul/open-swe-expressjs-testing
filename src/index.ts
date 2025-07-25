@@ -68,7 +68,7 @@ app.get("/users/search", (req: Request, res: Response) => {
     user.email.toLowerCase().includes(searchTerm)
   );
   
-  res.json(matchingUsers);
+  return res.json(matchingUsers);
 });
 
 // GET /users/:id - Get user by ID
@@ -164,5 +164,6 @@ app.listen(PORT, () => {
 
 // Export app for testing
 export { app };
+
 
 
