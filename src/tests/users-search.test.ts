@@ -208,7 +208,7 @@ describe("GET /users/search", () => {
 
     it("should handle special characters in emails", async () => {
       const response = await request(app)
-        .get("/users/search?q=user+tag")
+        .get("/users/search?q=user%2Btag")
         .expect(200);
 
       expect(response.body).toHaveLength(1);
