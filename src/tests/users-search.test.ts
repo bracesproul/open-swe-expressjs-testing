@@ -238,9 +238,11 @@ describe("GET /users/search", () => {
         .get("/users/search?q=John")
         .expect(200);
 
-      expect(response.body).toHaveLength(2);
+      // "John" matches "John Smith", "John Doe", and "Jane Johnson" (contains "John")
+      expect(response.body).toHaveLength(3);
       expect(response.body.map((u: any) => u.name)).toContain("John Smith");
       expect(response.body.map((u: any) => u.name)).toContain("John Doe");
+      expect(response.body.map((u: any) => u.name)).toContain("Jane Johnson");
     });
 
     it("should return multiple users with same last name", async () => {
@@ -298,4 +300,5 @@ describe("GET /users/search", () => {
     });
   });
 });
+
 
