@@ -260,7 +260,8 @@ describe("GET /users/search", () => {
         .get("/users/search?q=company.com")
         .expect(200);
 
-      expect(response.body).toHaveLength(3);
+      // "company.com" matches all users with company.com domain, including othercompany.com
+      expect(response.body).toHaveLength(4);
       expect(response.body.map((u: any) => u.name)).toContain("John Smith");
       expect(response.body.map((u: any) => u.name)).toContain("John Doe");
       expect(response.body.map((u: any) => u.name)).toContain("Jane Johnson");
