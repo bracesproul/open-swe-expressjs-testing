@@ -20,7 +20,7 @@ app.get("/", (_req: Request, res: Response) => {
 
 // GET /users - Get all users
 app.get("/users", (_req: Request, res: Response) => {
-  const userList = Object.values(users);
+  const userList = userService.getAllUsers();
   res.json(userList);
 });
 
@@ -28,11 +28,11 @@ app.get("/users", (_req: Request, res: Response) => {
 app.get("/users/:id", (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
 
-  if (isNaN(id)) {
+  if (!userService.isValidId(req.params.id)) {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
-  const user = users[id];
+  const user = userService.getUserById(id);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
@@ -114,5 +114,6 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
