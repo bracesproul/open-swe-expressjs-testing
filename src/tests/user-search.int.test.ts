@@ -1,6 +1,9 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterAll } from "@jest/globals";
 import request from "supertest";
-import app from "../index.js";
+import app, { server } from "../index.js";
+
+// Set NODE_ENV to test to prevent server from starting automatically
+process.env.NODE_ENV = "test";
 
 describe("GET /users/search", () => {
   // Test users data
@@ -32,6 +35,13 @@ describe("GET /users/search", () => {
         .send(userData)
         .expect(201);
       createdUserIds.push(response.body.id);
+    }
+  });
+
+  afterAll(async () => {
+    // Close server if it exists to prevent worker process warning
+    if (server) {
+      await new Promise<void>((resolve) => server.close(resolve));
     }
   });
 
@@ -196,3 +206,4 @@ describe("GET /users/search", () => {
     });
   });
 });
+
