@@ -137,6 +137,11 @@ app.put("/users/:id", (req: Request, res: Response) => {
     email: req.body.email.trim(),
   };
 
+  // Save data after modification
+  saveData(users, nextId).catch((error) =>
+    console.error("Failed to save data after PUT:", error)
+  );
+
   return res.json(users[id]);
 });
 
@@ -162,6 +167,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
