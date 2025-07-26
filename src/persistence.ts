@@ -71,3 +71,4 @@ export async function loadData(): Promise<PersistenceData | null> {
     console.error("Error loading data from file:", error);
     throw new Error(`Failed to load data: ${error instanceof Error ? error.message : "Unknown error"}`);
 }
+}
