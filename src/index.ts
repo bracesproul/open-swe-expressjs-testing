@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { saveData, loadData } from "./persistence.js";
 
 // User interface definition
 interface User {
@@ -8,8 +9,8 @@ interface User {
   createdAt: Date;
 }
 
-// In-memory database
-const users: { [key: number]: User } = {};
+// In-memory database (will be initialized from persistence)
+let users: { [key: number]: User } = {};
 let nextId = 1;
 
 // Create Express app
@@ -18,6 +19,18 @@ const PORT = 3000;
 
 // Middleware
 app.use(express.json());
+
+// Load data on server startup
+loadData()
+  .then((data) => {
+    if (data) {
+      users = data.users;
+      nextId = data.nextId;
+    }
+  })
+  .catch((error) => {
+    console.error("Failed to load data on startup:", error);
+  });
 
 // Helper function to validate user data
 function validateUserData(data: any): { isValid: boolean; errors: string[] } {
@@ -87,6 +100,12 @@ app.post("/users", (req: Request, res: Response) => {
   };
 
   users[newUser.id] = newUser;
+  
+  // Save data after modification
+  saveData(users, nextId).catch((error) =>
+    console.error("Failed to save data after POST:", error)
+  );
+
   return res.status(201).json(newUser);
 });
 
@@ -118,6 +137,11 @@ app.put("/users/:id", (req: Request, res: Response) => {
     email: req.body.email.trim(),
   };
 
+  // Save data after modification
+  saveData(users, nextId).catch((error) =>
+    console.error("Failed to save data after PUT:", error)
+  );
+
   return res.json(users[id]);
 });
 
@@ -143,3 +167,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+
+
+
