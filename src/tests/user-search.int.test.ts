@@ -105,10 +105,11 @@ describe("GET /users/search", () => {
         .get("/users/search?q=an")
         .expect(200);
 
-      expect(response.body).toHaveLength(2);
+      expect(response.body).toHaveLength(3);
       const names = response.body.map((user: any) => user.name);
       expect(names).toContain("Jane Smith");
       expect(names).toContain("Diana Prince");
+      expect(names).toContain("Bob Johnson");
     });
   });
 
