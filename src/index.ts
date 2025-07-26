@@ -138,6 +138,42 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   return res.status(204).send();
 });
 
+// POST /users/bulk-delete - Delete multiple users by IDs
+app.post("/users/bulk-delete", (req: Request, res: Response) => {
+  const { ids } = req.body;
+
+  // Validate input
+  if (!ids || !Array.isArray(ids)) {
+    return res.status(400).json({ error: "Request body must contain an 'ids' array" });
+  }
+
+  if (ids.length === 0) {
+    return res.status(400).json({ error: "The 'ids' array cannot be empty" });
+  }
+
+  // Validate that all IDs are numbers
+  for (const id of ids) {
+    if (typeof id !== "number" || isNaN(id) || !Number.isInteger(id)) {
+      return res.status(400).json({ error: "All IDs must be valid integers" });
+    }
+  }
+
+  const deleted: number[] = [];
+  const notFound: number[] = [];
+
+  // Process each ID
+  for (const id of ids) {
+    if (users[id]) {
+      delete users[id];
+      deleted.push(id);
+    } else {
+      notFound.push(id);
+    }
+  }
+
+  return res.status(200).json({ deleted: deleted.length, notFound });
+});
+
 // Start server
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
