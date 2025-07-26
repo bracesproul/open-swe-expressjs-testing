@@ -57,31 +57,22 @@ app.post("/users", (req: Request, res: Response) => {
 app.put("/users/:id", (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
 
-  if (isNaN(id)) {
+  if (!userService.isValidId(req.params.id)) {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
-  const user = users[id];
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
+  const result = userService.updateUser(id, req.body);
 
-  const { isValid, errors } = validateUserData(req.body);
-
-  if (!isValid) {
+  if (!result.success) {
+    if (result.notFound) {
+      return res.status(404).json({ error: "User not found" });
+    }
     return res
       .status(400)
-      .json({ error: "Validation failed", details: errors });
+      .json({ error: "Validation failed", details: result.errors });
   }
 
-  // Update user (preserve id and createdAt)
-  users[id] = {
-    ...user,
-    name: req.body.name.trim(),
-    email: req.body.email.trim(),
-  };
-
-  return res.json(users[id]);
+  return res.json(result.user);
 });
 
 // DELETE /users/:id - Delete user by ID
@@ -106,6 +97,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
