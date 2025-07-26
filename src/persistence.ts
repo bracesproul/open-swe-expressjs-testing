@@ -64,4 +64,9 @@ export async function loadData(): Promise<PersistenceData | null> {
     return data;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-
+      // File doesn't exist, return null (this is expected on first run)
+      return null;
+    }
+    
+    console.error("Error loading data from file:", error);
+    throw new Error(`Failed to load data: ${error instanceof Error ? error.message : "Unknown error"}`);
