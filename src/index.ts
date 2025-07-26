@@ -100,6 +100,12 @@ app.post("/users", (req: Request, res: Response) => {
   };
 
   users[newUser.id] = newUser;
+  
+  // Save data after modification
+  saveData(users, nextId).catch((error) =>
+    console.error("Failed to save data after POST:", error)
+  );
+
   return res.status(201).json(newUser);
 });
 
@@ -156,5 +162,6 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
