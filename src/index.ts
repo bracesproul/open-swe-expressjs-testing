@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { saveData, loadData } from "./persistence.js";
 
 // User interface definition
 interface User {
@@ -8,8 +9,8 @@ interface User {
   createdAt: Date;
 }
 
-// In-memory database
-const users: { [key: number]: User } = {};
+// In-memory database (will be initialized from persistence)
+let users: { [key: number]: User } = {};
 let nextId = 1;
 
 // Create Express app
@@ -143,3 +144,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
