@@ -19,7 +19,7 @@ describe("GET /users/search", () => {
     // Clean up any existing users by getting all users and deleting them
     const getUsersResponse = await request(app).get("/users");
     const existingUsers = getUsersResponse.body;
-    
+
     for (const user of existingUsers) {
       await request(app).delete(`/users/${user.id}`);
     }
@@ -37,17 +37,13 @@ describe("GET /users/search", () => {
 
   describe("Empty query scenarios", () => {
     it("should return empty array when query parameter is missing", async () => {
-      const response = await request(app)
-        .get("/users/search")
-        .expect(200);
+      const response = await request(app).get("/users/search").expect(200);
 
       expect(response.body).toEqual([]);
     });
 
     it("should return empty array when query parameter is empty string", async () => {
-      const response = await request(app)
-        .get("/users/search?q=")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=").expect(200);
 
       expect(response.body).toEqual([]);
     });
@@ -101,9 +97,7 @@ describe("GET /users/search", () => {
     });
 
     it("should find users by partial name substring", async () => {
-      const response = await request(app)
-        .get("/users/search?q=an")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=an").expect(200);
 
       expect(response.body).toHaveLength(3);
       const names = response.body.map((user: any) => user.name);
@@ -195,13 +189,10 @@ describe("GET /users/search", () => {
 
   describe("Multiple matches", () => {
     it("should return multiple users when query matches multiple names", async () => {
-      const response = await request(app)
-        .get("/users/search?q=o")
-        .expect(200);
+      const response = await request(app).get("/users/search?q=o").expect(200);
 
       expect(response.body.length).toBeGreaterThan(1);
       // Should match users with 'o' in name or email
     });
   });
 });
-

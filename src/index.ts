@@ -62,9 +62,10 @@ app.get("/users/search", (req: Request, res: Response) => {
   }
 
   const searchTerm = query.toLowerCase().trim();
-  const matchingUsers = Object.values(users).filter(user =>
-    user.name.toLowerCase().includes(searchTerm) ||
-    user.email.toLowerCase().includes(searchTerm)
+  const matchingUsers = Object.values(users).filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm) ||
+      user.email.toLowerCase().includes(searchTerm),
   );
 
   return res.json(matchingUsers);
@@ -163,5 +164,3 @@ app.listen(PORT, () => {
 
 // Export app for testing
 export default app;
-
-
