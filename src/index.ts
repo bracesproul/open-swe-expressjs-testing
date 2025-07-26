@@ -20,6 +20,18 @@ const PORT = 3000;
 // Middleware
 app.use(express.json());
 
+// Load data on server startup
+loadData()
+  .then((data) => {
+    if (data) {
+      users = data.users;
+      nextId = data.nextId;
+    }
+  })
+  .catch((error) => {
+    console.error("Failed to load data on startup:", error);
+  });
+
 // Helper function to validate user data
 function validateUserData(data: any): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
@@ -144,4 +156,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
