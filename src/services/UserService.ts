@@ -12,7 +12,11 @@ export class UserService {
   private validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -55,7 +59,10 @@ export class UserService {
     return { success: true, user: newUser };
   }
 
-  updateUser(id: number, data: any): { success: boolean; user?: User; errors?: string[] } {
+  updateUser(
+    id: number,
+    data: any,
+  ): { success: boolean; user?: User; errors?: string[] } {
     const existingUser = this.users[id];
     if (!existingUser) {
       return { success: false, errors: ["User not found"] };
