@@ -4,6 +4,13 @@ import { UserService } from "./services/UserService.js";
 // Create UserService instance
 const userService = new UserService();
 
+// Create Express app
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(express.json());
+
 // Routes
 
 // GET / - Welcome endpoint
@@ -91,4 +98,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
