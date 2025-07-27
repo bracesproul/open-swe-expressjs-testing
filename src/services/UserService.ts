@@ -25,9 +25,7 @@ export class UserService {
   createUser(data: { name: string; email: string }): User {
     const validation = this.validateUserData(data);
     if (!validation.isValid) {
-      throw new Error(
-        `Validation failed: ${validation.errors.join(", ")}`,
-      );
+      throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
     }
 
     const newUser: User = {
@@ -53,9 +51,7 @@ export class UserService {
 
     const validation = this.validateUserData(data);
     if (!validation.isValid) {
-      throw new Error(
-        `Validation failed: ${validation.errors.join(", ")}`,
-      );
+      throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
     }
 
     // Update user (preserve id and createdAt)
@@ -81,7 +77,11 @@ export class UserService {
   validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -98,4 +98,3 @@ export class UserService {
     return { isValid: errors.length === 0, errors };
   }
 }
-

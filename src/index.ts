@@ -46,7 +46,8 @@ app.post("/users", (req: Request, res: Response) => {
     const newUser = userService.createUser(req.body);
     return res.status(201).json(newUser);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     const errors = errorMessage.replace("Validation failed: ", "").split(", ");
     return res
       .status(400)
@@ -69,7 +70,8 @@ app.put("/users/:id", (req: Request, res: Response) => {
     }
     return res.json(updatedUser);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     const errors = errorMessage.replace("Validation failed: ", "").split(", ");
     return res
       .status(400)
@@ -98,5 +100,3 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
