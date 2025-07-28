@@ -21,7 +21,11 @@ export class UserService {
   private validateUserData(data: any): ValidationResult {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
@@ -70,7 +74,7 @@ export class UserService {
   // Update user by ID
   updateUser(
     id: number,
-    data: any
+    data: any,
   ): { success: boolean; user?: User; errors?: string[]; notFound?: boolean } {
     const user = this.users[id];
     if (!user) {
