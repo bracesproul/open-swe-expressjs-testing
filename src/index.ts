@@ -42,23 +42,15 @@ app.get("/users/:id", (req: Request, res: Response) => {
 
 // POST /users - Create new user
 app.post("/users", (req: Request, res: Response) => {
-  const { isValid, errors } = validateUserData(req.body);
+  const result = userService.createUser(req.body);
 
-  if (!isValid) {
+  if (result.errors) {
     return res
       .status(400)
-      .json({ error: "Validation failed", details: errors });
+      .json({ error: "Validation failed", details: result.errors });
   }
 
-  const newUser: User = {
-    id: nextId++,
-    name: req.body.name.trim(),
-    email: req.body.email.trim(),
-    createdAt: new Date(),
-  };
-
-  users[newUser.id] = newUser;
-  return res.status(201).json(newUser);
+  return res.status(201).json(result.user);
 });
 
 // PUT /users/:id - Update user by ID
@@ -114,6 +106,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
