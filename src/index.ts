@@ -30,7 +30,7 @@ async function saveData(): Promise<void> {
       users,
       nextId,
     };
-    
+
     const jsonData = JSON.stringify(dataToSave, null, 2);
     await fs.writeFile(DATA_FILE_PATH, jsonData, "utf8");
   } catch (error) {
@@ -44,45 +44,50 @@ async function loadData(): Promise<void> {
   try {
     const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
     const parsedData: PersistedData = JSON.parse(fileContent);
-    
+
     // Validate the structure of loaded data
     if (typeof parsedData !== "object" || parsedData === null) {
       throw new Error("Invalid data format in persistence file");
     }
-    
+
     if (typeof parsedData.nextId !== "number" || parsedData.nextId < 1) {
       throw new Error("Invalid nextId in persistence file");
     }
-    
+
     if (typeof parsedData.users !== "object" || parsedData.users === null) {
       throw new Error("Invalid users data in persistence file");
     }
-    
+
     // Clear existing data and restore from file
-    Object.keys(users).forEach(key => delete users[parseInt(key)]);
+    Object.keys(users).forEach((key) => delete users[parseInt(key)]);
     Object.assign(users, parsedData.users);
     nextId = parsedData.nextId;
-    
+
     // Convert createdAt strings back to Date objects
-    Object.values(users).forEach(user => {
+    Object.values(users).forEach((user) => {
       if (typeof user.createdAt === "string") {
         user.createdAt = new Date(user.createdAt);
       }
     });
-    
-    console.log(`Loaded ${Object.keys(users).length} users from persistence file`);
+
+    console.log(
+      `Loaded ${Object.keys(users).length} users from persistence file`,
+    );
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       // File doesn't exist, this is normal for first run
       console.log("No persistence file found, starting with empty database");
       return;
     }
-    
+
     if (error instanceof SyntaxError) {
-      console.error("Failed to parse persistence file - corrupted JSON:", error.message);
+      console.error(
+        "Failed to parse persistence file - corrupted JSON:",
+        error.message,
+      );
       throw new Error("Corrupted persistence file");
     }
-    
+
     console.error("Failed to load data from file:", error);
     throw error;
   }
@@ -163,7 +168,7 @@ app.post("/users", async (req: Request, res: Response) => {
   };
 
   users[newUser.id] = newUser;
-  
+
   try {
     await saveData();
   } catch (error) {
@@ -173,7 +178,7 @@ app.post("/users", async (req: Request, res: Response) => {
     console.error("Failed to persist user creation:", error);
     return res.status(500).json({ error: "Failed to save user data" });
   }
-  
+
   return res.status(201).json(newUser);
 });
 
@@ -200,7 +205,7 @@ app.put("/users/:id", async (req: Request, res: Response) => {
 
   // Store original user data for rollback in case of persistence failure
   const originalUser = { ...user };
-  
+
   // Update user (preserve id and createdAt)
   users[id] = {
     ...user,
@@ -255,7 +260,7 @@ async function startServer(): Promise<void> {
     // Load persisted data before starting the server
     console.log("Loading persisted data...");
     await loadData();
-    
+
     // Start the server
     app.listen(PORT, () => {
       // eslint-disable-next-line no-console
@@ -274,9 +279,3 @@ startServer().catch((error) => {
   console.error("Unexpected error during server startup:", error);
   process.exit(1);
 });
-
-
-
-
-
-

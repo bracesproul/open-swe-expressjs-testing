@@ -1,4 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } from "@jest/globals";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+  jest,
+} from "@jest/globals";
 import request from "supertest";
 import express from "express";
 import { promises as fs } from "fs";
@@ -49,11 +58,19 @@ function createTestApp() {
   function validateUserData(data: any): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim().length === 0) {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim().length === 0
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
-    if (!data.email || typeof data.email !== "string" || data.email.trim().length === 0) {
+    if (
+      !data.email ||
+      typeof data.email !== "string" ||
+      data.email.trim().length === 0
+    ) {
       errors.push("Email is required and must be a non-empty string");
     }
 
@@ -75,7 +92,7 @@ function createTestApp() {
         users: testUsers,
         nextId: testNextId,
       };
-      
+
       const jsonData = JSON.stringify(dataToSave, null, 2);
       await fs.writeFile(DATA_FILE_PATH, jsonData, "utf8");
     } catch (error) {
@@ -89,45 +106,50 @@ function createTestApp() {
     try {
       const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
       const parsedData: PersistedData = JSON.parse(fileContent);
-      
+
       // Validate the structure of loaded data
       if (typeof parsedData !== "object" || parsedData === null) {
         throw new Error("Invalid data format in persistence file");
       }
-      
+
       if (typeof parsedData.nextId !== "number" || parsedData.nextId < 1) {
         throw new Error("Invalid nextId in persistence file");
       }
-      
+
       if (typeof parsedData.users !== "object" || parsedData.users === null) {
         throw new Error("Invalid users data in persistence file");
       }
-      
+
       // Clear existing data and restore from file
-      Object.keys(testUsers).forEach(key => delete testUsers[parseInt(key)]);
+      Object.keys(testUsers).forEach((key) => delete testUsers[parseInt(key)]);
       Object.assign(testUsers, parsedData.users);
       testNextId = parsedData.nextId;
-      
+
       // Convert createdAt strings back to Date objects
-      Object.values(testUsers).forEach(user => {
+      Object.values(testUsers).forEach((user) => {
         if (typeof user.createdAt === "string") {
           user.createdAt = new Date(user.createdAt);
         }
       });
-      
-      console.log(`Loaded ${Object.keys(testUsers).length} users from persistence file`);
+
+      console.log(
+        `Loaded ${Object.keys(testUsers).length} users from persistence file`,
+      );
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") {
         // File doesn't exist, this is normal for first run
         console.log("No persistence file found, starting with empty database");
         return;
       }
-      
+
       if (error instanceof SyntaxError) {
-        console.error("Failed to parse persistence file - corrupted JSON:", error.message);
+        console.error(
+          "Failed to parse persistence file - corrupted JSON:",
+          error.message,
+        );
         throw new Error("Corrupted persistence file");
       }
-      
+
       console.error("Failed to load data from file:", error);
       throw error;
     }
@@ -141,16 +163,16 @@ function createTestApp() {
 
   testApp.get("/users/:id", (req, res) => {
     const id = parseInt(req.params.id);
-    
+
     if (isNaN(id)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
-    
+
     const user = testUsers[id];
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    
+
     return res.json(user);
   });
 
@@ -207,7 +229,7 @@ function createTestApp() {
 
     // Store original user data for rollback in case of persistence failure
     const originalUser = { ...user };
-    
+
     // Update user (preserve id and createdAt)
     testUsers[id] = {
       ...user,
@@ -267,14 +289,14 @@ describe("Persistence Integration Tests", () => {
     // Clean up test data
     testUsers = {};
     testNextId = 1;
-    
+
     // Remove data file if it exists
     try {
       await fs.unlink(DATA_FILE_PATH);
     } catch (error) {
       // File doesn't exist, which is fine
     }
-    
+
     // Create fresh test app
     app = createTestApp();
   });
@@ -322,7 +344,10 @@ describe("Persistence Integration Tests", () => {
       });
 
       // Verify data.json was created and contains correct data
-      const fileExists = await fs.access(DATA_FILE_PATH).then(() => true).catch(() => false);
+      const fileExists = await fs
+        .access(DATA_FILE_PATH)
+        .then(() => true)
+        .catch(() => false);
       expect(fileExists).toBe(true);
 
       const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
@@ -397,9 +422,7 @@ describe("Persistence Integration Tests", () => {
         .expect(201);
 
       // Delete first user
-      await request(app)
-        .delete("/users/1")
-        .expect(204);
+      await request(app).delete("/users/1").expect(204);
 
       // Verify data.json only contains second user
       const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
@@ -435,9 +458,7 @@ describe("Persistence Integration Tests", () => {
         .expect(201);
 
       // Verify users exist before restart
-      const beforeRestart = await request(app)
-        .get("/users")
-        .expect(200);
+      const beforeRestart = await request(app).get("/users").expect(200);
 
       expect(beforeRestart.body).toHaveLength(2);
 
@@ -446,9 +467,7 @@ describe("Persistence Integration Tests", () => {
       testNextId = 1;
 
       // Verify in-memory data is cleared
-      const afterClear = await request(app)
-        .get("/users")
-        .expect(200);
+      const afterClear = await request(app).get("/users").expect(200);
 
       expect(afterClear.body).toHaveLength(0);
 
@@ -456,9 +475,7 @@ describe("Persistence Integration Tests", () => {
       await (app as any).loadData();
 
       // Verify data is restored
-      const afterRestart = await request(app)
-        .get("/users")
-        .expect(200);
+      const afterRestart = await request(app).get("/users").expect(200);
 
       expect(afterRestart.body).toHaveLength(2);
       expect(afterRestart.body[0]).toMatchObject({
@@ -502,9 +519,7 @@ describe("Persistence Integration Tests", () => {
       await (app as any).loadData();
 
       // Get the user after restart
-      const afterRestart = await request(app)
-        .get("/users/1")
-        .expect(200);
+      const afterRestart = await request(app).get("/users/1").expect(200);
 
       // Verify createdAt is preserved and is a valid date
       expect(afterRestart.body.createdAt).toBe(originalCreatedAt);
@@ -541,9 +556,7 @@ describe("Persistence Integration Tests", () => {
       await (app as any).loadData();
 
       // Verify all data is intact
-      const finalUsers = await request(app)
-        .get("/users")
-        .expect(200);
+      const finalUsers = await request(app).get("/users").expect(200);
 
       expect(finalUsers.body).toHaveLength(2);
       expect(finalUsers.body.find((u: any) => u.id === 1)).toMatchObject({
@@ -587,9 +600,7 @@ describe("Persistence Integration Tests", () => {
       expect(response.body.error).toBe("Failed to save user data");
 
       // Verify user was not created in memory
-      const users = await request(app)
-        .get("/users")
-        .expect(200);
+      const users = await request(app).get("/users").expect(200);
 
       expect(users.body).toHaveLength(0);
 
@@ -602,12 +613,9 @@ describe("Persistence Integration Tests", () => {
       await fs.writeFile(DATA_FILE_PATH, "{ invalid json", "utf8");
 
       // Attempt to load data should throw an error
-      await expect((app as any).loadData()).rejects.toThrow("Corrupted persistence file");
+      await expect((app as any).loadData()).rejects.toThrow(
+        "Corrupted persistence file",
+      );
     });
   });
 });
-
-
-
-
-
