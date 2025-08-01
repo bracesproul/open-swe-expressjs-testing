@@ -104,59 +104,13 @@ beforeEach(() => {
   // Reset mocks
   jest.clearAllMocks();
   
-  // Mock path.join to return a predictable path
-  mockPath.join.mockReturnValue("/mock/path/data.json");
-  
   // Mock console methods
   console.log = jest.fn();
   console.error = jest.fn();
   
-  // Reset mock data
-  Object.keys(mockUsers).forEach(key => delete mockUsers[key]);
-  mockNextId.value = 1;
-  
-  // Create mock functions that simulate the actual persistence functions
-  saveData = jest.fn().mockImplementation(async () => {
-    const dataToSave = {
-      users: mockUsers,
-      nextId: mockNextId.value,
-    };
-    const jsonData = JSON.stringify(dataToSave, null, 2);
-    await mockFs.writeFile("/mock/path/data.json", jsonData, "utf8");
-  });
-  
-  loadData = jest.fn().mockImplementation(async () => {
-    const fileContent = await mockFs.readFile("/mock/path/data.json", "utf8");
-    const parsedData = JSON.parse(fileContent);
-    
-    // Validate the structure of loaded data
-    if (typeof parsedData !== "object" || parsedData === null) {
-      throw new Error("Invalid data format in persistence file");
-    }
-    
-    if (typeof parsedData.nextId !== "number" || parsedData.nextId < 1) {
-      throw new Error("Invalid nextId in persistence file");
-    }
-    
-    if (typeof parsedData.users !== "object" || parsedData.users === null) {
-      throw new Error("Invalid users data in persistence file");
-    }
-    
-    // Clear existing data and restore from file
-    Object.keys(mockUsers).forEach(key => delete mockUsers[parseInt(key)]);
-    Object.assign(mockUsers, parsedData.users);
-    mockNextId.value = parsedData.nextId;
-    
-    // Convert createdAt strings back to Date objects
-    Object.values(mockUsers).forEach((user: any) => {
-      if (typeof user.createdAt === "string") {
-        user.createdAt = new Date(user.createdAt);
-      }
-    });
-  });
-  
-  users = mockUsers;
-  nextId = mockNextId.value;
+  // Reset test data
+  Object.keys(testUsers).forEach(key => delete testUsers[parseInt(key)]);
+  testNextId = 1;
 });
 
 afterEach(() => {
@@ -497,4 +451,5 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
