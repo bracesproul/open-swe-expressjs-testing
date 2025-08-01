@@ -14,6 +14,80 @@ interface User {
 const users: { [key: number]: User } = {};
 let nextId = 1;
 
+// Data persistence file path
+const DATA_FILE_PATH = path.join(process.cwd(), "data.json");
+
+// Interface for persisted data structure
+interface PersistedData {
+  users: { [key: number]: User };
+  nextId: number;
+}
+
+// Save data to JSON file
+async function saveData(): Promise<void> {
+  try {
+    const dataToSave: PersistedData = {
+      users,
+      nextId,
+    };
+    
+    const jsonData = JSON.stringify(dataToSave, null, 2);
+    await fs.writeFile(DATA_FILE_PATH, jsonData, "utf8");
+  } catch (error) {
+    console.error("Failed to save data to file:", error);
+    throw new Error("Data persistence failed");
+  }
+}
+
+// Load data from JSON file
+async function loadData(): Promise<void> {
+  try {
+    const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
+    const parsedData: PersistedData = JSON.parse(fileContent);
+    
+    // Validate the structure of loaded data
+    if (typeof parsedData !== "object" || parsedData === null) {
+      throw new Error("Invalid data format in persistence file");
+    }
+    
+    if (typeof parsedData.nextId !== "number" || parsedData.nextId < 1) {
+      throw new Error("Invalid nextId in persistence file");
+    }
+    
+    if (typeof parsedData.users !== "object" || parsedData.users === null) {
+      throw new Error("Invalid users data in persistence file");
+    }
+    
+    // Clear existing data and restore from file
+    Object.keys(users).forEach(key => delete users[parseInt(key)]);
+    Object.assign(users, parsedData.users);
+    nextId = parsedData.nextId;
+    
+    // Convert createdAt strings back to Date objects
+    Object.values(users).forEach(user => {
+      if (typeof user.createdAt === "string") {
+        user.createdAt = new Date(user.createdAt);
+      }
+    });
+    
+    console.log(`Loaded ${Object.keys(users).length} users from persistence file`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      // File doesn't exist, this is normal for first run
+      console.log("No persistence file found, starting with empty database");
+      return;
+    }
+    
+    if (error instanceof SyntaxError) {
+      console.error("Failed to parse persistence file - corrupted JSON:", error.message);
+      throw new Error("Corrupted persistence file");
+    }
+    
+    console.error("Failed to load data from file:", error);
+    throw error;
+  }
+}
+
 // Create Express app
 const app = express();
 const PORT = 3000;
@@ -145,4 +219,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
