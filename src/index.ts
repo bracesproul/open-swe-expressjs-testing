@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import { promises as fs } from "fs";
+import path from "path";
 
 // User interface definition
 interface User {
@@ -143,3 +145,4 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
