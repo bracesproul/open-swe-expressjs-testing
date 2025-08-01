@@ -225,7 +225,7 @@ describe("Persistence Functions", () => {
         nextId: 2,
       };
       
-      mockFs.readFile.mockResolvedValue(JSON.stringify(testData));
+      mockReadFile.mockResolvedValue(JSON.stringify(testData));
       
       // Act
       await loadData();
@@ -244,7 +244,7 @@ describe("Persistence Functions", () => {
       // Arrange
       const error = new Error("File not found") as NodeJS.ErrnoException;
       error.code = "ENOENT";
-      mockFs.readFile.mockRejectedValue(error);
+      mockReadFile.mockRejectedValue(error);
       
       // Act
       await loadData();
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
