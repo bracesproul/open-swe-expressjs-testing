@@ -221,7 +221,7 @@ app.put("/users/:id", async (req: Request, res: Response) => {
 });
 
 // DELETE /users/:id - Delete user by ID
-app.delete("/users/:id", (req: Request, res: Response) => {
+app.delete("/users/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
 
   if (isNaN(id)) {
@@ -233,7 +233,19 @@ app.delete("/users/:id", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
 
+  // Store user data for rollback in case of persistence failure
+  const deletedUser = { ...user };
   delete users[id];
+
+  try {
+    await saveData();
+  } catch (error) {
+    // If persistence fails, restore the deleted user
+    users[id] = deletedUser;
+    console.error("Failed to persist user deletion:", error);
+    return res.status(500).json({ error: "Failed to save user data" });
+  }
+
   return res.status(204).send();
 });
 
@@ -242,6 +254,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
