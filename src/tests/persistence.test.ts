@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
-import { promises as fs } from "fs";
 import path from "path";
 
 // Mock fs module
-const mockWriteFile = jest.fn();
-const mockReadFile = jest.fn();
+const mockWriteFile = jest.fn() as jest.MockedFunction<any>;
+const mockReadFile = jest.fn() as jest.MockedFunction<any>;
 
 jest.mock("fs", () => ({
   promises: {
@@ -451,6 +450,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
