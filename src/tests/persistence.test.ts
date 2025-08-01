@@ -331,8 +331,8 @@ describe("Persistence Functions", () => {
     
     it("should clear existing data before loading new data", async () => {
       // Arrange
-      mockUsers[99] = { id: 99, name: "Old User", email: "old@example.com", createdAt: new Date() };
-      mockNextId.value = 100;
+      testUsers[99] = { id: 99, name: "Old User", email: "old@example.com", createdAt: new Date() };
+      testNextId = 100;
       
       const testData = {
         users: {
@@ -352,9 +352,9 @@ describe("Persistence Functions", () => {
       await loadData();
       
       // Assert
-      expect(mockUsers[99]).toBeUndefined();
-      expect(mockUsers[1]).toBeDefined();
-      expect(mockNextId.value).toBe(2);
+      expect(testUsers[99]).toBeUndefined();
+      expect(testUsers[1]).toBeDefined();
+      expect(testNextId).toBe(2);
     });
   });
   
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
