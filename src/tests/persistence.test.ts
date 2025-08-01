@@ -281,7 +281,7 @@ describe("Persistence Functions", () => {
         users: {},
         nextId: "invalid",
       };
-      mockFs.readFile.mockResolvedValue(JSON.stringify(invalidData));
+      mockReadFile.mockResolvedValue(JSON.stringify(invalidData));
       
       // Act & Assert
       await expect(loadData()).rejects.toThrow("Invalid nextId in persistence file");
@@ -293,7 +293,7 @@ describe("Persistence Functions", () => {
         users: "invalid",
         nextId: 1,
       };
-      mockFs.readFile.mockResolvedValue(JSON.stringify(invalidData));
+      mockReadFile.mockResolvedValue(JSON.stringify(invalidData));
       
       // Act & Assert
       await expect(loadData()).rejects.toThrow("Invalid users data in persistence file");
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
