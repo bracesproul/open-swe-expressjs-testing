@@ -53,7 +53,7 @@ app.get("/", (_req: Request, res: Response) => {
 
 // GET /users - Get all users
 app.get("/users", (_req: Request, res: Response) => {
-  const userList = Object.values(users);
+  const userList = userService.getAllUsers();
   res.json(userList);
 });
 
@@ -147,5 +147,6 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
