@@ -151,13 +151,13 @@ describe("Persistence Functions", () => {
     
     it("should format JSON with proper indentation", async () => {
       // Arrange
-      mockUsers[1] = {
+      testUsers[1] = {
         id: 1,
         name: "Test User",
         email: "test@example.com",
         createdAt: new Date("2023-01-01"),
       };
-      mockNextId.value = 2;
+      testNextId = 2;
       
       mockFs.writeFile.mockResolvedValue(undefined);
       
@@ -166,12 +166,12 @@ describe("Persistence Functions", () => {
       
       // Assert
       const expectedData = JSON.stringify({
-        users: mockUsers,
-        nextId: mockNextId.value,
+        users: testUsers,
+        nextId: testNextId,
       }, null, 2);
       
       expect(mockFs.writeFile).toHaveBeenCalledWith(
-        "/mock/path/data.json",
+        DATA_FILE_PATH,
         expectedData,
         "utf8"
       );
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
