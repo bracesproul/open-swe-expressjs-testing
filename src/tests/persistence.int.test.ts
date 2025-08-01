@@ -134,7 +134,7 @@ function createTestApp() {
   }
 
   // Routes
-  testApp.get("/users", (req, res) => {
+  testApp.get("/users", (_req, res) => {
     const userList = Object.values(testUsers);
     res.json(userList);
   });
@@ -604,3 +604,4 @@ describe("Persistence Integration Tests", () => {
     });
   });
 });
+
