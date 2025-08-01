@@ -191,7 +191,7 @@ describe("Persistence Functions", () => {
     
     it("should save empty users object and nextId 1 for initial state", async () => {
       // Arrange
-      mockFs.writeFile.mockResolvedValue(undefined);
+      mockWriteFile.mockResolvedValue(undefined);
       
       // Act
       await saveData();
@@ -202,7 +202,7 @@ describe("Persistence Functions", () => {
         nextId: 1,
       }, null, 2);
       
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
+      expect(mockWriteFile).toHaveBeenCalledWith(
         DATA_FILE_PATH,
         expectedData,
         "utf8"
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
