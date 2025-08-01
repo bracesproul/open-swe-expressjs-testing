@@ -65,7 +65,7 @@ app.get("/users/:id", (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
-  const user = users[id];
+  const user = userService.getUserById(id);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
@@ -147,6 +147,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
