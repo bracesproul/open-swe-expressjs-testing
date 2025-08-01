@@ -133,18 +133,18 @@ describe("Persistence Functions", () => {
       };
       testNextId = 2;
       
-      mockFs.writeFile.mockResolvedValue(undefined);
+      mockWriteFile.mockResolvedValue(undefined);
       
       // Act
       await saveData();
       
       // Assert
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
+      expect(mockWriteFile).toHaveBeenCalledWith(
         DATA_FILE_PATH,
         expect.stringContaining('"users"'),
         "utf8"
       );
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
+      expect(mockWriteFile).toHaveBeenCalledWith(
         DATA_FILE_PATH,
         expect.stringContaining('"nextId": 2'),
         "utf8"
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
