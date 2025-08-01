@@ -410,47 +410,48 @@ describe("Persistence Functions", () => {
       mockFs.writeFile.mockResolvedValue(undefined);
       
       // First cycle
-      mockUsers[1] = {
+      testUsers[1] = {
         id: 1,
         name: "User 1",
         email: "user1@example.com",
         createdAt: new Date("2023-01-01"),
       };
-      mockNextId.value = 2;
+      testNextId = 2;
       
       mockFs.readFile.mockResolvedValue(JSON.stringify({
-        users: mockUsers,
-        nextId: mockNextId.value,
+        users: testUsers,
+        nextId: testNextId,
       }));
       
       await saveData();
       await loadData();
       
       // Second cycle - add more data
-      mockUsers[2] = {
+      testUsers[2] = {
         id: 2,
         name: "User 2",
         email: "user2@example.com",
         createdAt: new Date("2023-01-02"),
       };
-      mockNextId.value = 3;
+      testNextId = 3;
       
       mockFs.readFile.mockResolvedValue(JSON.stringify({
-        users: mockUsers,
-        nextId: mockNextId.value,
+        users: testUsers,
+        nextId: testNextId,
       }));
       
       await saveData();
       await loadData();
       
       // Assert
-      expect(Object.keys(mockUsers)).toHaveLength(2);
-      expect(mockUsers[1].name).toBe("User 1");
-      expect(mockUsers[2].name).toBe("User 2");
-      expect(mockNextId.value).toBe(3);
+      expect(Object.keys(testUsers)).toHaveLength(2);
+      expect(testUsers[1].name).toBe("User 1");
+      expect(testUsers[2].name).toBe("User 2");
+      expect(testNextId).toBe(3);
     });
   });
 });
+
 
 
 
