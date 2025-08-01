@@ -383,12 +383,10 @@ describe("Persistence Functions", () => {
       mockFs.writeFile.mockResolvedValue(undefined);
       
       // Mock successful load
-      mockFs.readFile.mockImplementation(async () => {
-        return JSON.stringify({
-          users: originalData,
-          nextId: 3,
-        });
-      });
+      mockFs.readFile.mockResolvedValue(JSON.stringify({
+        users: originalData,
+        nextId: 3,
+      }));
       
       // Act
       await saveData();
@@ -451,6 +449,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
