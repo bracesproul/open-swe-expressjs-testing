@@ -201,7 +201,7 @@ describe("Persistence Functions", () => {
       }, null, 2);
       
       expect(mockFs.writeFile).toHaveBeenCalledWith(
-        "/mock/path/data.json",
+        DATA_FILE_PATH,
         expectedData,
         "utf8"
       );
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
