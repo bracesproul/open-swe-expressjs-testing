@@ -178,7 +178,7 @@ app.post("/users", async (req: Request, res: Response) => {
 });
 
 // PUT /users/:id - Update user by ID
-app.put("/users/:id", (req: Request, res: Response) => {
+app.put("/users/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
 
   if (isNaN(id)) {
@@ -198,12 +198,24 @@ app.put("/users/:id", (req: Request, res: Response) => {
       .json({ error: "Validation failed", details: errors });
   }
 
+  // Store original user data for rollback in case of persistence failure
+  const originalUser = { ...user };
+  
   // Update user (preserve id and createdAt)
   users[id] = {
     ...user,
     name: req.body.name.trim(),
     email: req.body.email.trim(),
   };
+
+  try {
+    await saveData();
+  } catch (error) {
+    // If persistence fails, rollback the changes
+    users[id] = originalUser;
+    console.error("Failed to persist user update:", error);
+    return res.status(500).json({ error: "Failed to save user data" });
+  }
 
   return res.json(users[id]);
 });
@@ -230,6 +242,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
