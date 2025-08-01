@@ -103,7 +103,8 @@ async function loadData(): Promise<void> {
 
 beforeEach(() => {
   // Reset mocks
-  jest.clearAllMocks();
+  mockWriteFile.mockClear();
+  mockReadFile.mockClear();
   
   // Mock console methods
   console.log = jest.fn();
@@ -450,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
