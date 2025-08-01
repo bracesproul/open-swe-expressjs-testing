@@ -54,7 +54,7 @@ async function saveData(): Promise<void> {
 // Test implementation of loadData function
 async function loadData(): Promise<void> {
   try {
-    const fileContent = await mockReadFile(DATA_FILE_PATH, "utf8");
+    const fileContent = await mockReadFile(DATA_FILE_PATH, "utf8") as string;
     const parsedData: PersistedData = JSON.parse(fileContent);
     
     // Validate the structure of loaded data
@@ -450,6 +450,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
