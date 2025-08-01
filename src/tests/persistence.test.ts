@@ -123,13 +123,13 @@ describe("Persistence Functions", () => {
   describe("saveData", () => {
     it("should successfully save users and nextId to data.json", async () => {
       // Arrange
-      mockUsers[1] = {
+      testUsers[1] = {
         id: 1,
         name: "John Doe",
         email: "john@example.com",
         createdAt: new Date("2023-01-01"),
       };
-      mockNextId.value = 2;
+      testNextId = 2;
       
       mockFs.writeFile.mockResolvedValue(undefined);
       
@@ -138,12 +138,12 @@ describe("Persistence Functions", () => {
       
       // Assert
       expect(mockFs.writeFile).toHaveBeenCalledWith(
-        "/mock/path/data.json",
+        DATA_FILE_PATH,
         expect.stringContaining('"users"'),
         "utf8"
       );
       expect(mockFs.writeFile).toHaveBeenCalledWith(
-        "/mock/path/data.json",
+        DATA_FILE_PATH,
         expect.stringContaining('"nextId": 2'),
         "utf8"
       );
@@ -451,5 +451,6 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
