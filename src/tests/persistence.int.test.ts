@@ -572,7 +572,7 @@ describe("Persistence Integration Tests", () => {
     it("should handle persistence failures gracefully during user creation", async () => {
       // Mock fs.writeFile to fail
       const originalWriteFile = fs.writeFile;
-      (fs as any).writeFile = jest.fn().mockRejectedValue(new Error("Disk full"));
+      (fs as any).writeFile = jest.fn().mockRejectedValue(new Error("Disk full")) as any;
 
       const response = await request(app)
         .post("/users")
@@ -604,5 +604,6 @@ describe("Persistence Integration Tests", () => {
     });
   });
 });
+
 
 
