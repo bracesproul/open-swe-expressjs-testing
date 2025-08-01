@@ -45,7 +45,7 @@ async function saveData(): Promise<void> {
     };
     
     const jsonData = JSON.stringify(dataToSave, null, 2);
-    await fs.writeFile(DATA_FILE_PATH, jsonData, "utf8");
+    await mockWriteFile(DATA_FILE_PATH, jsonData, "utf8");
   } catch (error) {
     console.error("Failed to save data to file:", error);
     throw new Error("Data persistence failed");
@@ -55,7 +55,7 @@ async function saveData(): Promise<void> {
 // Test implementation of loadData function
 async function loadData(): Promise<void> {
   try {
-    const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
+    const fileContent = await mockReadFile(DATA_FILE_PATH, "utf8");
     const parsedData: PersistedData = JSON.parse(fileContent);
     
     // Validate the structure of loaded data
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
