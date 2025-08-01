@@ -29,7 +29,11 @@ export class UserService {
   validateUserData(data: any): ValidationResult {
     const errors: string[] = [];
 
-    if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    if (
+      !data.name ||
+      typeof data.name !== "string" ||
+      data.name.trim() === ""
+    ) {
       errors.push("Name is required and must be a non-empty string");
     }
 
