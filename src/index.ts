@@ -13,26 +13,7 @@ const userService = new UserService();
 // Middleware
 app.use(express.json());
 
-// Helper function to validate user data
-function validateUserData(data: any): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
 
-  if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
-    errors.push("Name is required and must be a non-empty string");
-  }
-
-  if (
-    !data.email ||
-    typeof data.email !== "string" ||
-    data.email.trim() === ""
-  ) {
-    errors.push("Email is required and must be a non-empty string");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push("Email must be a valid email address");
-  }
-
-  return { isValid: errors.length === 0, errors };
-}
 
 // Routes
 
@@ -132,6 +113,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
