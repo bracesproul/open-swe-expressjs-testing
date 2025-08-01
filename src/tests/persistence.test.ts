@@ -229,13 +229,13 @@ describe("Persistence Functions", () => {
       await loadData();
       
       // Assert
-      expect(mockUsers[1]).toEqual({
+      expect(testUsers[1]).toEqual({
         id: 1,
         name: "John Doe",
         email: "john@example.com",
         createdAt: new Date("2023-01-01T00:00:00.000Z"),
       });
-      expect(mockNextId.value).toBe(2);
+      expect(testNextId).toBe(2);
     });
     
     it("should handle file not found gracefully", async () => {
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
