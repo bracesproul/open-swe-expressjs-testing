@@ -249,8 +249,8 @@ describe("Persistence Functions", () => {
       
       // Assert
       expect(console.log).toHaveBeenCalledWith("No persistence file found, starting with empty database");
-      expect(Object.keys(mockUsers)).toHaveLength(0);
-      expect(mockNextId.value).toBe(1);
+      expect(Object.keys(testUsers)).toHaveLength(0);
+      expect(testNextId).toBe(1);
     });
     
     it("should handle JSON parsing errors gracefully", async () => {
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
