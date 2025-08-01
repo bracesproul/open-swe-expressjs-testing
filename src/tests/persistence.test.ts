@@ -3,14 +3,15 @@ import { promises as fs } from "fs";
 import path from "path";
 
 // Mock fs module
+const mockWriteFile = jest.fn();
+const mockReadFile = jest.fn();
+
 jest.mock("fs", () => ({
   promises: {
-    writeFile: jest.fn(),
-    readFile: jest.fn(),
+    writeFile: mockWriteFile,
+    readFile: mockReadFile,
   },
 }));
-
-const mockFs = fs as jest.Mocked<typeof fs>;
 
 // Mock console methods to avoid noise in tests
 const originalConsoleLog = console.log;
@@ -449,6 +450,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
