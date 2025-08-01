@@ -11,8 +11,6 @@ const userService = new UserService();
 // Middleware
 app.use(express.json());
 
-
-
 // Routes
 
 // GET / - Welcome endpoint
@@ -111,6 +109,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
