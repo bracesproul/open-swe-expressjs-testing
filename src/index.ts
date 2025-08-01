@@ -17,6 +17,9 @@ let nextId = 1;
 const app = express();
 const PORT = 3000;
 
+// Create UserService instance
+const userService = new UserService();
+
 // Middleware
 app.use(express.json());
 
@@ -144,4 +147,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
