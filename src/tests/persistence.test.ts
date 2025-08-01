@@ -161,7 +161,7 @@ describe("Persistence Functions", () => {
       };
       testNextId = 2;
       
-      mockFs.writeFile.mockResolvedValue(undefined);
+      mockWriteFile.mockResolvedValue(undefined);
       
       // Act
       await saveData();
@@ -172,7 +172,7 @@ describe("Persistence Functions", () => {
         nextId: testNextId,
       }, null, 2);
       
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
+      expect(mockWriteFile).toHaveBeenCalledWith(
         DATA_FILE_PATH,
         expectedData,
         "utf8"
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
