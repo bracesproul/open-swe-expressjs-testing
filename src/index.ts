@@ -99,12 +99,12 @@ app.put("/users/:id", (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
-  const user = users[id];
+  const user = userService.getUserById(id);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const { isValid, errors } = validateUserData(req.body);
+  const { isValid, errors } = userService.validateUserData(req.body);
 
   if (!isValid) {
     return res
@@ -112,14 +112,12 @@ app.put("/users/:id", (req: Request, res: Response) => {
       .json({ error: "Validation failed", details: errors });
   }
 
-  // Update user (preserve id and createdAt)
-  users[id] = {
-    ...user,
-    name: req.body.name.trim(),
-    email: req.body.email.trim(),
-  };
+  const updatedUser = userService.updateUser(id, {
+    name: req.body.name,
+    email: req.body.email,
+  });
 
-  return res.json(users[id]);
+  return res.json(updatedUser);
 });
 
 // DELETE /users/:id - Delete user by ID
@@ -144,6 +142,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
