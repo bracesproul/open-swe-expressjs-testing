@@ -407,7 +407,7 @@ describe("Persistence Functions", () => {
     
     it("should handle multiple save/load cycles correctly", async () => {
       // Arrange
-      mockFs.writeFile.mockResolvedValue(undefined);
+      mockWriteFile.mockResolvedValue(undefined);
       
       // First cycle
       testUsers[1] = {
@@ -418,7 +418,7 @@ describe("Persistence Functions", () => {
       };
       testNextId = 2;
       
-      mockFs.readFile.mockResolvedValue(JSON.stringify({
+      mockReadFile.mockResolvedValue(JSON.stringify({
         users: testUsers,
         nextId: testNextId,
       }));
@@ -435,7 +435,7 @@ describe("Persistence Functions", () => {
       };
       testNextId = 3;
       
-      mockFs.readFile.mockResolvedValue(JSON.stringify({
+      mockReadFile.mockResolvedValue(JSON.stringify({
         users: testUsers,
         nextId: testNextId,
       }));
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
