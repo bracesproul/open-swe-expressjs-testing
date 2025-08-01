@@ -572,7 +572,7 @@ describe("Persistence Integration Tests", () => {
     it("should handle persistence failures gracefully during user creation", async () => {
       // Mock fs.writeFile to fail
       const originalWriteFile = fs.writeFile;
-      const mockWriteFile = jest.fn();
+      const mockWriteFile = jest.fn() as jest.MockedFunction<any>;
       mockWriteFile.mockRejectedValue(new Error("Disk full"));
       (fs as any).writeFile = mockWriteFile;
 
@@ -606,6 +606,7 @@ describe("Persistence Integration Tests", () => {
     });
   });
 });
+
 
 
 
