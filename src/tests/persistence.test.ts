@@ -182,7 +182,7 @@ describe("Persistence Functions", () => {
     it("should handle file write errors gracefully", async () => {
       // Arrange
       const writeError = new Error("Permission denied");
-      mockFs.writeFile.mockRejectedValue(writeError);
+      mockWriteFile.mockRejectedValue(writeError);
       
       // Act & Assert
       await expect(saveData()).rejects.toThrow("Data persistence failed");
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
