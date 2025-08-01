@@ -249,11 +249,32 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
   return res.status(204).send();
 });
 
-// Start server
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Initialize server with data loading
+async function startServer(): Promise<void> {
+  try {
+    // Load persisted data before starting the server
+    console.log("Loading persisted data...");
+    await loadData();
+    
+    // Start the server
+    app.listen(PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log("Server initialization complete");
+    });
+  } catch (error) {
+    console.error("Failed to initialize server:", error);
+    console.error("Server startup aborted due to data loading failure");
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer().catch((error) => {
+  console.error("Unexpected error during server startup:", error);
+  process.exit(1);
 });
+
 
 
 
