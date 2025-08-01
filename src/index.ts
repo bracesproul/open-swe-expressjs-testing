@@ -146,7 +146,7 @@ app.get("/users/:id", (req: Request, res: Response) => {
 });
 
 // POST /users - Create new user
-app.post("/users", (req: Request, res: Response) => {
+app.post("/users", async (req: Request, res: Response) => {
   const { isValid, errors } = validateUserData(req.body);
 
   if (!isValid) {
@@ -163,6 +163,17 @@ app.post("/users", (req: Request, res: Response) => {
   };
 
   users[newUser.id] = newUser;
+  
+  try {
+    await saveData();
+  } catch (error) {
+    // If persistence fails, remove the user from memory to maintain consistency
+    delete users[newUser.id];
+    nextId--;
+    console.error("Failed to persist user creation:", error);
+    return res.status(500).json({ error: "Failed to save user data" });
+  }
+  
   return res.status(201).json(newUser);
 });
 
@@ -219,5 +230,6 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
