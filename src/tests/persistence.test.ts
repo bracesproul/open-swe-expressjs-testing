@@ -376,8 +376,8 @@ describe("Persistence Functions", () => {
         },
       };
       
-      Object.assign(mockUsers, originalData);
-      mockNextId.value = 3;
+      Object.assign(testUsers, originalData);
+      testNextId = 3;
       
       // Mock successful save
       mockFs.writeFile.mockResolvedValue(undefined);
@@ -394,15 +394,15 @@ describe("Persistence Functions", () => {
       await saveData();
       
       // Clear data to simulate restart
-      Object.keys(mockUsers).forEach(key => delete mockUsers[key]);
-      mockNextId.value = 1;
+      Object.keys(testUsers).forEach(key => delete testUsers[key]);
+      testNextId = 1;
       
       await loadData();
       
       // Assert
-      expect(mockUsers[1]).toEqual(originalData[1]);
-      expect(mockUsers[2]).toEqual(originalData[2]);
-      expect(mockNextId.value).toBe(3);
+      expect(testUsers[1]).toEqual(originalData[1]);
+      expect(testUsers[2]).toEqual(originalData[2]);
+      expect(testNextId).toBe(3);
     });
     
     it("should handle multiple save/load cycles correctly", async () => {
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
