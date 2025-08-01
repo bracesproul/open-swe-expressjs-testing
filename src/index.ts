@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 import { UserService } from "./services/UserService.js";
 
-
-
 // Create Express app
 const app = express();
 const PORT = 3000;
@@ -113,6 +111,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
