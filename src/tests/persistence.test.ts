@@ -392,7 +392,7 @@ describe("Persistence Functions", () => {
       await saveData();
       
       // Clear data to simulate restart
-      Object.keys(testUsers).forEach(key => delete testUsers[key]);
+      Object.keys(testUsers).forEach(key => delete testUsers[parseInt(key)]);
       testNextId = 1;
       
       await loadData();
@@ -449,6 +449,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
