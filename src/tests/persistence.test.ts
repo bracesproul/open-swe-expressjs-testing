@@ -319,7 +319,7 @@ describe("Persistence Functions", () => {
         nextId: 3,
       };
       
-      mockFs.readFile.mockResolvedValue(JSON.stringify(testData));
+      mockReadFile.mockResolvedValue(JSON.stringify(testData));
       
       // Act
       await loadData();
@@ -348,7 +348,7 @@ describe("Persistence Functions", () => {
         nextId: 2,
       };
       
-      mockFs.readFile.mockResolvedValue(JSON.stringify(testData));
+      mockReadFile.mockResolvedValue(JSON.stringify(testData));
       
       // Act
       await loadData();
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
