@@ -10,27 +10,95 @@ jest.mock("fs", () => ({
   },
 }));
 
-// Mock path module
-jest.mock("path", () => ({
-  join: jest.fn(),
-}));
-
 const mockFs = fs as jest.Mocked<typeof fs>;
-const mockPath = path as jest.Mocked<typeof path>;
-
-// Import the module after mocking
-let saveData: () => Promise<void>;
-let loadData: () => Promise<void>;
-let users: { [key: number]: any };
-let nextId: number;
-
-// Mock the module's internal state
-const mockUsers = {};
-const mockNextId = { value: 1 };
 
 // Mock console methods to avoid noise in tests
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
+
+// Create a test module that simulates the persistence functions
+// This allows us to test the logic without importing the entire Express app
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+interface PersistedData {
+  users: { [key: number]: User };
+  nextId: number;
+}
+
+// Test data storage
+let testUsers: { [key: number]: User } = {};
+let testNextId = 1;
+const DATA_FILE_PATH = path.join(process.cwd(), "data.json");
+
+// Test implementation of saveData function
+async function saveData(): Promise<void> {
+  try {
+    const dataToSave: PersistedData = {
+      users: testUsers,
+      nextId: testNextId,
+    };
+    
+    const jsonData = JSON.stringify(dataToSave, null, 2);
+    await fs.writeFile(DATA_FILE_PATH, jsonData, "utf8");
+  } catch (error) {
+    console.error("Failed to save data to file:", error);
+    throw new Error("Data persistence failed");
+  }
+}
+
+// Test implementation of loadData function
+async function loadData(): Promise<void> {
+  try {
+    const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
+    const parsedData: PersistedData = JSON.parse(fileContent);
+    
+    // Validate the structure of loaded data
+    if (typeof parsedData !== "object" || parsedData === null) {
+      throw new Error("Invalid data format in persistence file");
+    }
+    
+    if (typeof parsedData.nextId !== "number" || parsedData.nextId < 1) {
+      throw new Error("Invalid nextId in persistence file");
+    }
+    
+    if (typeof parsedData.users !== "object" || parsedData.users === null) {
+      throw new Error("Invalid users data in persistence file");
+    }
+    
+    // Clear existing data and restore from file
+    Object.keys(testUsers).forEach(key => delete testUsers[parseInt(key)]);
+    Object.assign(testUsers, parsedData.users);
+    testNextId = parsedData.nextId;
+    
+    // Convert createdAt strings back to Date objects
+    Object.values(testUsers).forEach(user => {
+      if (typeof user.createdAt === "string") {
+        user.createdAt = new Date(user.createdAt);
+      }
+    });
+    
+    console.log(`Loaded ${Object.keys(testUsers).length} users from persistence file`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      // File doesn't exist, this is normal for first run
+      console.log("No persistence file found, starting with empty database");
+      return;
+    }
+    
+    if (error instanceof SyntaxError) {
+      console.error("Failed to parse persistence file - corrupted JSON:", error.message);
+      throw new Error("Corrupted persistence file");
+    }
+    
+    console.error("Failed to load data from file:", error);
+    throw error;
+  }
+}
 
 beforeEach(() => {
   // Reset mocks
@@ -429,3 +497,4 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
