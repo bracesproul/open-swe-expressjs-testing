@@ -323,10 +323,10 @@ describe("Persistence Functions", () => {
       await loadData();
       
       // Assert
-      expect(mockUsers[1].createdAt).toBeInstanceOf(Date);
-      expect(mockUsers[2].createdAt).toBeInstanceOf(Date);
-      expect(mockUsers[1].createdAt.toISOString()).toBe("2023-01-01T00:00:00.000Z");
-      expect(mockUsers[2].createdAt.toISOString()).toBe("2023-01-02T00:00:00.000Z");
+      expect(testUsers[1].createdAt).toBeInstanceOf(Date);
+      expect(testUsers[2].createdAt).toBeInstanceOf(Date);
+      expect(testUsers[1].createdAt.toISOString()).toBe("2023-01-01T00:00:00.000Z");
+      expect(testUsers[2].createdAt.toISOString()).toBe("2023-01-02T00:00:00.000Z");
     });
     
     it("should clear existing data before loading new data", async () => {
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
