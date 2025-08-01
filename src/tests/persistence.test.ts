@@ -257,7 +257,7 @@ describe("Persistence Functions", () => {
     
     it("should handle JSON parsing errors gracefully", async () => {
       // Arrange
-      mockFs.readFile.mockResolvedValue("invalid json");
+      mockReadFile.mockResolvedValue("invalid json");
       
       // Act & Assert
       await expect(loadData()).rejects.toThrow("Corrupted persistence file");
@@ -269,7 +269,7 @@ describe("Persistence Functions", () => {
     
     it("should validate data format and reject invalid data", async () => {
       // Arrange
-      mockFs.readFile.mockResolvedValue("null");
+      mockReadFile.mockResolvedValue("null");
       
       // Act & Assert
       await expect(loadData()).rejects.toThrow("Invalid data format in persistence file");
@@ -451,6 +451,7 @@ describe("Persistence Functions", () => {
     });
   });
 });
+
 
 
 
