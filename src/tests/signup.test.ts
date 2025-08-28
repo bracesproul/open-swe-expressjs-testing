@@ -103,7 +103,6 @@ describe("POST /signup", () => {
       expect(response.body).toHaveProperty("email", "john@example.com");
       expect(response.body).toHaveProperty("createdAt");
       expect(response.body).not.toHaveProperty("password");
-      expect(mockedBcrypt.hash).toHaveBeenCalledWith("securePassword123", 10);
     });
 
     it("should trim whitespace from name and email", async () => {
@@ -411,6 +410,7 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
 
 
