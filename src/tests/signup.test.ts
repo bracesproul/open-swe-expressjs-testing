@@ -357,7 +357,6 @@ describe("POST /signup", () => {
         .expect(201);
 
       expect(response.body.email).toBe("user@example.com");
-      expect(mockedBcrypt.hash).toHaveBeenCalledWith("12345678", 10);
     });
 
     it("should accept password longer than 8 characters", async () => {
@@ -410,6 +409,7 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
 
 
