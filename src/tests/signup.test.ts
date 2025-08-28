@@ -17,8 +17,8 @@ describe("POST /signup", () => {
     jest.clearAllMocks();
 
     // Setup bcrypt mock
-    mockedBcrypt.hash.mockImplementation((password: string) => 
-      Promise.resolve(`hashed_${password}`)
+    mockedBcrypt.hash.mockImplementation((password: string | Buffer) => 
+      Promise.resolve(`hashed_${password}`) as any
     );
 
     // Create a fresh Express app for each test
@@ -424,4 +424,5 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
