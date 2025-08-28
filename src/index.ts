@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
 // User interface definition
 interface User {
@@ -177,5 +178,6 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
