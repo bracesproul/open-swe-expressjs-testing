@@ -84,9 +84,9 @@ describe("POST /signup", () => {
 
         users[newUser.id] = newUser;
 
-        const { password, ...userWithoutPassword } = newUser;
+        const { password: _, ...userWithoutPassword } = newUser;
         return res.status(201).json(userWithoutPassword);
-      } catch (error) {
+      } catch (_error) {
         return res.status(500).json({ error: "Failed to create user" });
       }
     });
@@ -401,6 +401,7 @@ describe("POST /signup", () => {
   // Note: Error handling test removed as we cannot easily mock bcrypt in ESM environment
   // The error handling is still covered by the implementation in the actual route
 });
+
 
 
 
