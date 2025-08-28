@@ -121,15 +121,9 @@ describe("POST /signup", () => {
 
       const response = await request(app)
         .post("/signup")
-        .send(userData);
+        .send(userData)
+        .expect(201);
 
-      // Debug: Check what error we're getting
-      if (response.status !== 201) {
-        console.log("Response status:", response.status);
-        console.log("Response body:", response.body);
-      }
-
-      expect(response.status).toBe(201);
       expect(response.body.name).toBe("Jane Doe");
       expect(response.body.email).toBe("jane@example.com");
     });
@@ -407,6 +401,7 @@ describe("POST /signup", () => {
   // Note: Error handling test removed as we cannot easily mock bcrypt in ESM environment
   // The error handling is still covered by the implementation in the actual route
 });
+
 
 
 
