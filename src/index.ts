@@ -41,6 +41,39 @@ function validateUserData(data: any): { isValid: boolean; errors: string[] } {
   return { isValid: errors.length === 0, errors };
 }
 
+// Helper function to validate signup data
+function validateSignupData(data: any): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+    errors.push("Name is required and must be a non-empty string");
+  }
+
+  if (
+    !data.email ||
+    typeof data.email !== "string" ||
+    data.email.trim() === ""
+  ) {
+    errors.push("Email is required and must be a non-empty string");
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.push("Email must be a valid email address");
+  }
+
+  if (!data.password || typeof data.password !== "string") {
+    errors.push("Password is required");
+  } else if (data.password.length < 8) {
+    errors.push("Password must be at least 8 characters long");
+  }
+
+  return { isValid: errors.length === 0, errors };
+}
+
+// Helper function to check if email already exists
+function isEmailTaken(email: string): boolean {
+  const userList = Object.values(users);
+  return userList.some(user => user.email.toLowerCase() === email.toLowerCase());
+}
+
 // Routes
 
 // GET / - Welcome endpoint
@@ -144,4 +177,5 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
