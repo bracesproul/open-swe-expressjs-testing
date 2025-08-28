@@ -17,10 +17,17 @@ describe("POST /signup", () => {
     let nextId = 1;
 
     // Helper functions
-    function validateSignupData(data: any): { isValid: boolean; errors: string[] } {
+    function validateSignupData(data: any): {
+      isValid: boolean;
+      errors: string[];
+    } {
       const errors: string[] = [];
 
-      if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
+      if (
+        !data.name ||
+        typeof data.name !== "string" ||
+        data.name.trim() === ""
+      ) {
         errors.push("Name is required and must be a non-empty string");
       }
 
@@ -45,7 +52,9 @@ describe("POST /signup", () => {
 
     function isEmailTaken(email: string): boolean {
       const userList = Object.values(users);
-      return userList.some((user: any) => user.email.toLowerCase() === email.toLowerCase());
+      return userList.some(
+        (user: any) => user.email.toLowerCase() === email.toLowerCase(),
+      );
     }
 
     // Signup route
@@ -54,7 +63,7 @@ describe("POST /signup", () => {
       const trimmedData = {
         name: req.body.name?.trim ? req.body.name.trim() : req.body.name,
         email: req.body.email?.trim ? req.body.email.trim() : req.body.email,
-        password: req.body.password
+        password: req.body.password,
       };
 
       const { isValid, errors } = validateSignupData(trimmedData);
@@ -66,9 +75,7 @@ describe("POST /signup", () => {
       }
 
       if (isEmailTaken(trimmedData.email)) {
-        return res
-          .status(409)
-          .json({ error: "Email already exists" });
+        return res.status(409).json({ error: "Email already exists" });
       }
 
       try {
@@ -97,7 +104,7 @@ describe("POST /signup", () => {
       const userData = {
         name: "John Doe",
         email: "john@example.com",
-        password: "securePassword123"
+        password: "securePassword123",
       };
 
       const response = await request(app)
@@ -116,7 +123,7 @@ describe("POST /signup", () => {
       const userData = {
         name: "  Jane Doe  ",
         email: "  jane@example.com  ",
-        password: "password123"
+        password: "password123",
       };
 
       const response = await request(app)
@@ -134,20 +141,17 @@ describe("POST /signup", () => {
       const firstUser = {
         name: "First User",
         email: "user@example.com",
-        password: "password123"
+        password: "password123",
       };
 
       const secondUser = {
         name: "Second User",
         email: "user@example.com",
-        password: "differentpass123"
+        password: "differentpass123",
       };
 
       // Create first user
-      await request(app)
-        .post("/signup")
-        .send(firstUser)
-        .expect(201);
+      await request(app).post("/signup").send(firstUser).expect(201);
 
       // Try to create second user with same email
       const response = await request(app)
@@ -162,20 +166,17 @@ describe("POST /signup", () => {
       const firstUser = {
         name: "First User",
         email: "User@Example.com",
-        password: "password123"
+        password: "password123",
       };
 
       const secondUser = {
         name: "Second User",
         email: "user@example.com",
-        password: "differentpass123"
+        password: "differentpass123",
       };
 
       // Create first user
-      await request(app)
-        .post("/signup")
-        .send(firstUser)
-        .expect(201);
+      await request(app).post("/signup").send(firstUser).expect(201);
 
       // Try to create second user with same email (different case)
       const response = await request(app)
@@ -194,7 +195,7 @@ describe("POST /signup", () => {
         "missing@domain",
         "@nodomain.com",
         "spaces in@email.com",
-        "double@@domain.com"
+        "double@@domain.com",
       ];
 
       for (const email of invalidEmails) {
@@ -203,12 +204,14 @@ describe("POST /signup", () => {
           .send({
             name: "Test User",
             email: email,
-            password: "password123"
+            password: "password123",
           })
           .expect(400);
 
         expect(response.body.error).toBe("Validation failed");
-        expect(response.body.details).toContain("Email must be a valid email address");
+        expect(response.body.details).toContain(
+          "Email must be a valid email address",
+        );
       }
     });
 
@@ -217,7 +220,7 @@ describe("POST /signup", () => {
         "user@example.com",
         "user.name@example.com",
         "user+tag@example.co.uk",
-        "user123@test-domain.org"
+        "user123@test-domain.org",
       ];
 
       for (let i = 0; i < validEmails.length; i++) {
@@ -226,7 +229,7 @@ describe("POST /signup", () => {
           .send({
             name: `Test User ${i}`,
             email: validEmails[i],
-            password: "password123"
+            password: "password123",
           })
           .expect(201);
 
@@ -241,12 +244,14 @@ describe("POST /signup", () => {
         .post("/signup")
         .send({
           email: "user@example.com",
-          password: "password123"
+          password: "password123",
         })
         .expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Name is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Name is required and must be a non-empty string",
+      );
     });
 
     it("should reject signup with empty name", async () => {
@@ -255,12 +260,14 @@ describe("POST /signup", () => {
         .send({
           name: "",
           email: "user@example.com",
-          password: "password123"
+          password: "password123",
         })
         .expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Name is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Name is required and must be a non-empty string",
+      );
     });
 
     it("should reject signup with whitespace-only name", async () => {
@@ -269,12 +276,14 @@ describe("POST /signup", () => {
         .send({
           name: "   ",
           email: "user@example.com",
-          password: "password123"
+          password: "password123",
         })
         .expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Name is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Name is required and must be a non-empty string",
+      );
     });
 
     it("should reject signup without email", async () => {
@@ -282,12 +291,14 @@ describe("POST /signup", () => {
         .post("/signup")
         .send({
           name: "Test User",
-          password: "password123"
+          password: "password123",
         })
         .expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Email is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Email is required and must be a non-empty string",
+      );
     });
 
     it("should reject signup with empty email", async () => {
@@ -296,12 +307,14 @@ describe("POST /signup", () => {
         .send({
           name: "Test User",
           email: "",
-          password: "password123"
+          password: "password123",
         })
         .expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Email is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Email is required and must be a non-empty string",
+      );
     });
 
     it("should reject signup without password", async () => {
@@ -309,7 +322,7 @@ describe("POST /signup", () => {
         .post("/signup")
         .send({
           name: "Test User",
-          email: "user@example.com"
+          email: "user@example.com",
         })
         .expect(400);
 
@@ -318,14 +331,15 @@ describe("POST /signup", () => {
     });
 
     it("should reject signup with multiple missing fields", async () => {
-      const response = await request(app)
-        .post("/signup")
-        .send({})
-        .expect(400);
+      const response = await request(app).post("/signup").send({}).expect(400);
 
       expect(response.body.error).toBe("Validation failed");
-      expect(response.body.details).toContain("Name is required and must be a non-empty string");
-      expect(response.body.details).toContain("Email is required and must be a non-empty string");
+      expect(response.body.details).toContain(
+        "Name is required and must be a non-empty string",
+      );
+      expect(response.body.details).toContain(
+        "Email is required and must be a non-empty string",
+      );
       expect(response.body.details).toContain("Password is required");
     });
   });
@@ -340,7 +354,7 @@ describe("POST /signup", () => {
           .send({
             name: "Test User",
             email: `user${password.length}@example.com`,
-            password: password
+            password: password,
           })
           .expect(400);
 
@@ -348,7 +362,9 @@ describe("POST /signup", () => {
         if (password === "") {
           expect(response.body.details).toContain("Password is required");
         } else {
-          expect(response.body.details).toContain("Password must be at least 8 characters long");
+          expect(response.body.details).toContain(
+            "Password must be at least 8 characters long",
+          );
         }
       }
     });
@@ -359,7 +375,7 @@ describe("POST /signup", () => {
         .send({
           name: "Test User",
           email: "user@example.com",
-          password: "12345678"
+          password: "12345678",
         })
         .expect(201);
 
@@ -372,7 +388,7 @@ describe("POST /signup", () => {
         .send({
           name: "Test User",
           email: "user@example.com",
-          password: "thisIsAVeryLongAndSecurePassword123!"
+          password: "thisIsAVeryLongAndSecurePassword123!",
         })
         .expect(201);
 
@@ -388,7 +404,7 @@ describe("POST /signup", () => {
           .send({
             name: "Test User",
             email: `user${i}@example.com`,
-            password: invalidPasswords[i]
+            password: invalidPasswords[i],
           })
           .expect(400);
 
@@ -401,15 +417,3 @@ describe("POST /signup", () => {
   // Note: Error handling test removed as we cannot easily mock bcrypt in ESM environment
   // The error handling is still covered by the implementation in the actual route
 });
-
-
-
-
-
-
-
-
-
-
-
-

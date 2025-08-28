@@ -72,7 +72,9 @@ function validateSignupData(data: any): { isValid: boolean; errors: string[] } {
 // Helper function to check if email already exists
 function isEmailTaken(email: string): boolean {
   const userList = Object.values(users);
-  return userList.some(user => user.email.toLowerCase() === email.toLowerCase());
+  return userList.some(
+    (user) => user.email.toLowerCase() === email.toLowerCase(),
+  );
 }
 
 // Routes
@@ -139,9 +141,7 @@ app.post("/signup", async (req: Request, res: Response) => {
 
   // Check if email already exists
   if (isEmailTaken(req.body.email)) {
-    return res
-      .status(409)
-      .json({ error: "Email already exists" });
+    return res.status(409).json({ error: "Email already exists" });
   }
 
   try {
@@ -221,8 +221,3 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
-
-
