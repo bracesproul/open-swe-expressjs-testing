@@ -409,7 +409,7 @@ describe("POST /signup", () => {
 
   describe("Error handling", () => {
     it("should handle bcrypt errors gracefully", async () => {
-      mockedBcrypt.hash.mockRejectedValueOnce(new Error("Bcrypt error"));
+      mockedBcrypt.hash.mockRejectedValueOnce(new Error("Bcrypt error") as never);
 
       const response = await request(app)
         .post("/signup")
@@ -424,5 +424,6 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
 
