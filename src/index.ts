@@ -161,9 +161,9 @@ app.post("/signup", async (req: Request, res: Response) => {
     users[newUser.id] = newUser;
 
     // Return user object without password field
-    const { password, ...userWithoutPassword } = newUser;
+    const { password: _, ...userWithoutPassword } = newUser;
     return res.status(201).json(userWithoutPassword);
-  } catch (error) {
+  } catch (_error) {
     return res.status(500).json({ error: "Failed to create user" });
   }
 });
@@ -221,6 +221,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
