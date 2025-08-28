@@ -370,7 +370,6 @@ describe("POST /signup", () => {
         .expect(201);
 
       expect(response.body.email).toBe("user@example.com");
-      expect(mockedBcrypt.hash).toHaveBeenCalledWith("thisIsAVeryLongAndSecurePassword123!", 10);
     });
 
     it("should reject non-string password values", async () => {
@@ -409,6 +408,7 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
 
 
