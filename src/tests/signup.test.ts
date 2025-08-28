@@ -1,26 +1,13 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import request from "supertest";
 import express, { Express } from "express";
 import bcrypt from "bcrypt";
-
-// Mock bcrypt to speed up tests
-jest.mock("bcrypt");
-const mockedBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 
 describe("POST /signup", () => {
   let app: Express;
   let users: any;
 
   beforeEach(() => {
-    // Clear modules to get fresh app instance
-    jest.resetModules();
-    jest.clearAllMocks();
-
-    // Setup bcrypt mock
-    mockedBcrypt.hash.mockImplementation((password: string | Buffer) => 
-      Promise.resolve(`hashed_${password}`) as any
-    );
-
     // Create a fresh Express app for each test
     app = express();
     app.use(express.json());
@@ -424,6 +411,7 @@ describe("POST /signup", () => {
     });
   });
 });
+
 
 
 
