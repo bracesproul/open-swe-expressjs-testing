@@ -118,11 +118,54 @@ app.post("/users", (req: Request, res: Response) => {
     id: nextId++,
     name: req.body.name.trim(),
     email: req.body.email.trim(),
+    password: "", // Empty password for non-signup user creation
     createdAt: new Date(),
   };
 
   users[newUser.id] = newUser;
   return res.status(201).json(newUser);
+});
+
+// POST /signup - User signup with password
+app.post("/signup", async (req: Request, res: Response) => {
+  // Validate signup data
+  const { isValid, errors } = validateSignupData(req.body);
+
+  if (!isValid) {
+    return res
+      .status(400)
+      .json({ error: "Validation failed", details: errors });
+  }
+
+  // Check if email already exists
+  if (isEmailTaken(req.body.email)) {
+    return res
+      .status(409)
+      .json({ error: "Email already exists" });
+  }
+
+  try {
+    // Hash the password with salt rounds of 10
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // Create new user with hashed password
+    const newUser: User = {
+      id: nextId++,
+      name: req.body.name.trim(),
+      email: req.body.email.trim(),
+      password: hashedPassword,
+      createdAt: new Date(),
+    };
+
+    // Store the user
+    users[newUser.id] = newUser;
+
+    // Return user object without password field
+    const { password, ...userWithoutPassword } = newUser;
+    return res.status(201).json(userWithoutPassword);
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to create user" });
+  }
 });
 
 // PUT /users/:id - Update user by ID
@@ -178,6 +221,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 
