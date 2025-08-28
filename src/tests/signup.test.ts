@@ -50,7 +50,14 @@ describe("POST /signup", () => {
 
     // Signup route
     app.post("/signup", async (req, res) => {
-      const { isValid, errors } = validateSignupData(req.body);
+      // Trim input data before validation
+      const trimmedData = {
+        name: req.body.name?.trim ? req.body.name.trim() : req.body.name,
+        email: req.body.email?.trim ? req.body.email.trim() : req.body.email,
+        password: req.body.password
+      };
+
+      const { isValid, errors } = validateSignupData(trimmedData);
 
       if (!isValid) {
         return res
@@ -58,19 +65,19 @@ describe("POST /signup", () => {
           .json({ error: "Validation failed", details: errors });
       }
 
-      if (isEmailTaken(req.body.email)) {
+      if (isEmailTaken(trimmedData.email)) {
         return res
           .status(409)
           .json({ error: "Email already exists" });
       }
 
       try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(trimmedData.password, 10);
 
         const newUser = {
           id: nextId++,
-          name: req.body.name.trim(),
-          email: req.body.email.trim(),
+          name: trimmedData.name,
+          email: trimmedData.email,
           password: hashedPassword,
           createdAt: new Date(),
         };
@@ -400,6 +407,7 @@ describe("POST /signup", () => {
   // Note: Error handling test removed as we cannot easily mock bcrypt in ESM environment
   // The error handling is still covered by the implementation in the actual route
 });
+
 
 
 
